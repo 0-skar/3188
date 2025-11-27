@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Holy Table & Bonorum System</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- START OF FONT DEFINITION --- */
+        @font-face {
+            font-family: 'Enochian';
+            src: url('enochian-t.woff2') format('woff2');
+        }
+
+        .enochian-font {
+            font-family: 'Enochian', sans-serif !important;
+            font-size: 1.2em;
+            font-weight: normal;
+            line-height: 1;
+            text-transform: none !important;
+        }
+        /* --- END OF FONT DEFINITION --- */
+
+        :root {
+            --cell-size: 26px;
+            --border-color: #333;
+            --king-highlight-color: #e63946; /* Red for Kings */
+            --prince-highlight-color: #ffdd00; /* Yellow for Princes */
+            --minister-highlight-color: #2a9d8f; /* Green for Ministers */
+            --bg-color: #f1faee;
+            --font-color: #1d3557;
+            --table-bg: #fff;
+            --corner-bg: #a8dadc;
+            --king-start-color: #b3001b; /* Dark Red for start */
+            --prince-start-color: #d4a000; /* Dark Yellow for start */
+            --b-cell-size: 28px; 
+            --b-num-size: 8px; 
+            --b-letter-size: 12px; 
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .scaling-wrapper {
+            width: 1800px; /* Force desktop width for layout calculation */
+            transform-origin: top center;
+            transition: transform 0.2s ease-out;
+        }
+
+        .master-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .side-panel {
+            width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .font-toggle-wrapper {
+            width: 100%;
+            text-align: center;
+        }
+
+        #toggle-font-btn {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #457b9d;
+            color: white;
+            border: 2px solid #1d3557;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        #toggle-font-btn:hover {
+            background-color: #1d3557;
+            transform: translateY(-2px);
+        }
+
+        #toggle-font-btn.active-enochian {
+            background-color: var(--minister-highlight-color);
+            border-color: #1a6a61;
+        }
+
+        .central-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+            flex-grow: 1;
+            min-width: 0;
+        }
+        
+        .entity-list-wrapper {
+            text-align: center;
+            width: 100%;
+        }
+
+        #princes-list-desktop-main {
+            margin-top: 59px;
+        }
+
+        .entity-list-wrapper h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            color: #457b9d;
+        }
+
+        .entity-list-wrapper ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .entity-list-wrapper button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: var(--table-bg);
+            border-radius: 5px;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        #bonorum-full-list button {
+            font-size: 11px;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        #bonorum-full-list {
+            margin-top: 431px;
+        }
+
+        #bonorum-full-list ul {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .entity-list-wrapper button:hover {
+            background-color: #e9e9e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .entity-list-wrapper button.active {
+            background-color: #457b9d;
+            color: white;
+            border-color: #1d3557;
+            font-weight: bold;
+        }
+
+        .table-container, .loagaeth-container, .bonorum-cross-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        h1, h2 {
+            color: var(--font-color);
+            text-align: center;
+            margin-top: 0;
+        }
+        h1 { margin-bottom: 20px; }
+
+        .holy-table {
+            display: grid;
+            grid-template-columns: repeat(23, var(--cell-size));
+            grid-template-rows: repeat(23, var(--cell-size));
+            border: 2px solid var(--border-color);
+            background-color: var(--table-bg);
+            padding: 5px;
+            position: relative;
+        }
+        
+        #holy-table-image-thumbnail {
+            width: 110px;
+            height: 158px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--table-bg);
+            padding: 5px;
+            cursor: zoom-in;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .zoom-lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            cursor: zoom-out;
+            overflow: hidden;
+        }
+
+        .zoom-lightbox.active {
+            display: flex;
+        }
+
+        .zoom-lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--table-bg);
+            padding: 5px;
+            cursor: zoom-in;
+            transition: transform 0.2s ease-out;
+        }
+
+        .zoom-lightbox img.pannable { cursor: grab; }
+        .zoom-lightbox img.dragging { cursor: grabbing; }
+
+        #dee-lightbox {
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+        #dee-lightbox img { max-height: 70vh; }
+        #dee-lightbox .dee-description {
+            color: #f1faee;
+            max-width: 90vw;
+            text-align: center;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        #dee-lightbox .dee-description b { color: #a8dadc; }
+        
+        .dee-container { text-align: center; }
+        .dee-container h2 { font-size: 1.2em; margin-bottom: 10px; }
+        
+        #dee-thumbnail {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            border: 2px solid var(--border-color);
+            padding: 4px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #dee-thumbnail:hover { transform: scale(1.05); }
+        
+        .side-image-container { margin-top: 201px; text-align: center; }
+        .cross-image-container { margin-top: 365px; text-align: center; }
+        .circle-image-container { margin-top: 524px; text-align: center; }
+        .tables-image-container { margin-top: 382px; text-align: center; }
+        .sigillum-image-container { margin-top: 850px; text-align: center; }
+
+
+        #cross-image-thumbnail, #circle-image-thumbnail, #tables-image-thumbnail, #loagaeth-practice-thumbnail, #sigillum-dei-thumbnail {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            border: 2px solid var(--border-color);
+            padding: 4px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #cross-image-thumbnail:hover, #circle-image-thumbnail:hover, #tables-image-thumbnail:hover, #loagaeth-practice-thumbnail:hover, #sigillum-dei-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .letter-cell {
+            font-size: calc(var(--cell-size) * 0.54);
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .corner-cell {
+            font-size: calc(var(--cell-size) * 0.77);
+            font-weight: bold;
+            background-color: var(--corner-bg);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .corner-cell.king-corner-highlight {
+            background-color: var(--king-highlight-color);
+            color: white;
+        }
+        .corner-cell.prince-corner-highlight {
+            background-color: var(--prince-highlight-color);
+            color: var(--font-color);
+        }
+
+        .letter-cell.king-highlight { background-color: var(--king-highlight-color); color: white; border-color: var(--king-highlight-color); transform: scale(1.1); }
+        .letter-cell.king-start-point { background-color: var(--king-start-color); color: white; }
+        .letter-cell.prince-highlight { background-color: var(--prince-highlight-color); color: var(--font-color); border-color: var(--prince-highlight-color); transform: scale(1.1); }
+        .letter-cell.prince-start-point { background-color: var(--prince-start-color); color: white; }
+        .center-diagram-cell.highlight { background-color: var(--king-highlight-color); color: white; }
+        
+        .inner-grid-background { position: absolute; top: calc(var(--cell-size) + 5px); left: calc(var(--cell-size) + 5px); width: calc(21 * var(--cell-size)); height: calc(21 * var(--cell-size)); z-index: 1; pointer-events: none; }
+        .inner-grid-background::before, .inner-grid-background::after { content: ''; position: absolute; width: 100%; height: 100%; background-color: rgba(168, 218, 220, 0.25); }
+        .inner-grid-background::before { clip-path: polygon(50% 0%, 100% 75%, 0% 75%); }
+        .inner-grid-background::after { clip-path: polygon(50% 100%, 0% 25%, 100% 25%); }
+        .center-diagram-cell { font-size: calc(var(--cell-size) * 0.54); font-weight: bold; color: #000; background-color: rgba(255, 255, 255, 0.75); border: 1px solid #ccc; transition: all 0.3s ease; cursor: pointer; }
+
+        .loagaeth-table { margin-top: 40px; display: grid; grid-template-rows: repeat(7, var(--cell-size)); border: 2px solid var(--border-color); padding: 5px; background-color: var(--table-bg); transition: grid-template-columns 0.5s ease-in-out, gap 0.5s ease-in-out; }
+        .loagaeth-cell { width: var(--cell-size); height: var(--cell-size); display: flex; justify-content: center; align-items: center; border: 1px solid #e0e0e0; font-size: calc(var(--cell-size) * 0.54); font-family: 'Times New Roman', serif; text-transform: lowercase; transition: all 0.3s ease-in-out; }
+        .loagaeth-cell.loagaeth-key-highlight { background-color: var(--king-highlight-color); color: white; transform: scale(1.1); }
+        .loagaeth-cell.loagaeth-king-name-highlight { background-color: var(--king-highlight-color); color: white; font-weight: bold; }
+        .loagaeth-cell.loagaeth-prince-name-highlight { background-color: var(--prince-highlight-color); color: var(--font-color); font-weight: bold; }
+        #loagaeth-clickable-area { position: absolute; cursor: pointer; z-index: 10; }
+
+        .bonorum-cross-wrapper { 
+            display: grid;
+            grid-template-areas: ". north ." "left center right" ". south ."; 
+            grid-template-columns: auto auto auto; 
+            gap: 5px; 
+            margin: 40px 0 25px;
+        }
+        .bonorum-table { 
+            display: grid; 
+            background-color: var(--table-bg); 
+            border: 2px solid var(--border-color); 
+            padding: 5px;
+            position: relative;
+        }
+        #bonorum-table-north { grid-area: north; } #bonorum-table-left { grid-area: left; } #bonorum-table-center { grid-area: center; } #bonorum-table-right { grid-area: right; } #bonorum-table-south { grid-area: south; }
+        .bonorum-table::before,
+        .bonorum-table::after {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: calc(var(--b-letter-size) * 1.33);
+            font-weight: bold;
+            color: var(--font-color);
+            left: 0;
+        }
+        #bonorum-table-north::before { content: '2 3'; top: calc(-1 * var(--b-cell-size) * 0.8); word-spacing: calc(7 * (var(--b-cell-size) / 2)); }
+        #bonorum-table-right::before { content: '4'; top: calc(-1 * var(--b-cell-size) * 0.8); }
+        #bonorum-table-left::before { content: '7'; top: calc(-1 * var(--b-cell-size) * 0.8); }
+        #bonorum-table-south::after { content: '6 5'; bottom: calc(-1 * var(--b-cell-size) * 0.8); word-spacing: calc(7 * (var(--b-cell-size) / 2)); }
+
+        .bonorum-cell { height: var(--b-cell-size); border: 1px solid #ccc; display: flex; justify-content: center; align-items: center; font-size: var(--b-letter-size); position: relative; transition: background-color: 0.3s; }
+        .bonorum-cell span { position: absolute; top: 1px; left: 2px; font-size: var(--b-num-size); color: #666; }
+        #bonorum-table-north .bonorum-cell span, #bonorum-table-south .bonorum-cell span { left: 1px; font-size: calc(var(--b-num-size) * 0.85); }
+        
+        .bonorum-cell.king-highlight { background-color: var(--king-highlight-color); color: white; }
+        .bonorum-cell.prince-highlight { background-color: var(--prince-highlight-color); color: var(--font-color); }
+        .bonorum-cell.minister-highlight { background-color: var(--minister-highlight-color); color: white; }
+
+        .bonorum-diagram-container { margin-top: 30px; width: 100%; max-width: 800px; align-self: center; }
+        .bonorum-diagram-container svg { width: 100%; height: auto; font-family: 'Times New Roman', serif; }
+        .diagram-ring { fill: none; stroke: #aaa; stroke-width: 0.5; }
+        .diagram-spoke { stroke: #333; stroke-width: 1; }
+        .diagram-text { font-size: 11px; text-anchor: middle; dominant-baseline: middle; fill: var(--font-color); transition: all 0.2s; }
+        .diagram-number, .diagram-symbol, .diagram-sector-number { text-anchor: middle; dominant-baseline: middle; fill: #666; }
+        .diagram-number { font-size: 9px; }
+        .diagram-symbol { font-size: 12px; }
+        .diagram-sector-number { font-size: 18px; font-weight: bold; fill: #333; }
+        .bonorum-diagram-name { cursor: pointer; }
+        .bonorum-diagram-name:hover .diagram-text { font-weight: bold; }
+        .diagram-text-bg { fill: transparent; transition: fill 0.2s; }
+        .bonorum-diagram-name.active .diagram-text { font-weight: bold; }
+        .bonorum-diagram-name.active.king .diagram-text-bg { fill: var(--king-highlight-color); }
+        .bonorum-diagram-name.active.king .diagram-text { fill: white; }
+        .bonorum-diagram-name.active.prince .diagram-text-bg { fill: var(--prince-highlight-color); }
+        .bonorum-diagram-name.active.prince .diagram-text { fill: var(--font-color); }
+        .bonorum-diagram-name.active.minister .diagram-text-bg { fill: var(--minister-highlight-color); }
+        .bonorum-diagram-name.active.minister .diagram-text { fill: white; }
+        
+        .planetary-kings-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; margin-top: 40px; }
+        .planetary-king-square { display: flex; flex-direction: column; align-items: center; flex-basis: 250px; flex-grow: 1; }
+        .planetary-king-square h3 { margin: 0 0 8px 0; font-size: 16px; color: var(--font-color); }
+        .planetary-king-grid { display: grid; grid-template-columns: repeat(7, var(--cell-size)); grid-template-rows: repeat(6, var(--cell-size)); border: 3px solid var(--border-color); background-color: var(--table-bg); padding: 4px; }
+        
+        .planetary-king-row { display: contents; }
+        .planetary-king-row .letter-cell { cursor: pointer; transition: all 0.2s ease-in-out; }
+        .planetary-king-row:hover .letter-cell { background-color: #e9e9e9; }
+        .planetary-king-row.selected .letter-cell { transform: scale(1.05); box-shadow: 0 0 8px rgba(0,0,0,0.2); background-color: #a8dadc; }
+        
+        .planetary-key-symbol {
+            width: 90px;
+            height: auto;
+            margin-top: 10px;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            padding: 3px;
+            background-color: var(--table-bg);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+        .planetary-key-symbol:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .planetary-key-symbol.seal-key-active {
+            background-color: var(--prince-highlight-color);
+        }
+
+        .diagram-text-bg.planetary-king-highlight { fill: var(--king-highlight-color); }
+        .diagram-text.planetary-king-highlight { fill: white; }
+        .diagram-text-bg.planetary-prince-highlight { fill: var(--prince-highlight-color); }
+        .diagram-text.planetary-prince-highlight { fill: var(--font-color); }
+        .diagram-text-bg.planetary-minister-highlight { fill: var(--minister-highlight-color); }
+        .diagram-text.planetary-minister-highlight { fill: white; }
+
+        .bonorum-cell.planetary-king-highlight, .loagaeth-cell.planetary-king-highlight, .letter-cell.planetary-king-highlight { background-color: var(--king-highlight-color); color: white; transform: scale(1.1); }
+        .bonorum-cell.planetary-prince-highlight, .loagaeth-cell.planetary-prince-highlight, .letter-cell.planetary-prince-highlight { background-color: var(--prince-highlight-color); color: var(--font-color); transform: scale(1.1); }
+        .bonorum-cell.planetary-minister-highlight, .loagaeth-cell.planetary-minister-highlight, .letter-cell.planetary-minister-highlight { background-color: var(--minister-highlight-color); color: white; transform: scale(1.1); }
+        
+        .diagram-symbol#bonorum-symbol-sun.highlight,
+        .diagram-symbol#bonorum-symbol-moon.highlight,
+        .diagram-symbol#bonorum-symbol-mars.highlight,
+        .diagram-symbol#bonorum-symbol-mercury.highlight,
+        .diagram-symbol#bonorum-symbol-jupiter.highlight,
+        .diagram-symbol#bonorum-symbol-venus.highlight,
+        .diagram-symbol#bonorum-symbol-saturn.highlight {
+            fill: var(--king-highlight-color);
+            font-weight: bold;
+            stroke: var(--king-highlight-color);
+            stroke-width: 0.7px;
+        }
+
+        .play-button { background-color: #457b9d; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background-color: 0.2s; }
+        .play-button:hover { background-color: #1d3557; }
+        .play-button .icon { transition: all 0.2s ease-in-out; }
+        .play-button .play-icon { width: 0; height: 0; border-style: solid; border-width: 7px 0 7px 12px; border-color: transparent transparent transparent white; margin-left: 4px; }
+        .play-button .pause-icon { width: 10px; height: 12px; border-style: double; border-width: 0px 0px 0px 10px; border-color: white; }
+        .play-button .play-icon { display: block; }
+        .play-button .pause-icon { display: none; }
+        .play-button.playing .play-icon { display: none; }
+        .play-button.playing .pause-icon { display: block; }
+
+        /* --- STYLES FOR HEPTAGRAM SEAL (SIGILLUM) --- */
+        .heptagram-seal-container {
+            margin-top: 50px;
+            width: 100%;
+            max-width: 800px;
+            align-self: center;
+        }
+        
+        .heptagram-seal-container h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        #svg-container {
+            width: 98vmin;
+            height: 98vmin;
+            max-width: 800px;
+            max-height: 800px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+        .line-segment {
+            stroke: #333;
+            stroke-width: 1.5;
+            fill: none;
+            transition: stroke 0.2s ease-in-out, stroke-width 0.2s ease-in-out;
+            vector-effect: non-scaling-stroke;
+        }
+        .line-segment:hover {
+            stroke: #e74c3c;
+            stroke-width: 4;
+            cursor: pointer;
+        }
+        .symbol-text {
+            font-family: 'Times New Roman', serif;
+            fill: #1a1a1a;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .seal-highlight-bg {
+            fill: transparent;
+            transition: fill 0.2s;
+        }
+
+        .seal-highlight .seal-highlight-bg {
+            fill: var(--prince-highlight-color);
+        }
+
+        /* --- STYLES FOR PDF THUMBNAIL (Moved from sig1.html) --- */
+        .pdf-link-wrapper {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: var(--font-color);
+            transition: transform 0.2s ease;
+        }
+        .pdf-link-wrapper:hover { transform: scale(1.05); }
+        .pdf-icon-box {
+            width: 60px;
+            height: 80px;
+            background-color: #b3001b;
+            border: 2px solid #333;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 5px auto;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .pdf-icon-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-width: 0 15px 15px 0;
+            border-style: solid;
+            border-color: #fff #fff #900016 #900016; 
+            box-shadow: -1px 1px 2px rgba(0,0,0,0.2);
+            border-bottom-left-radius: 4px;
+        }
+        .pdf-label { font-size: 16px; font-weight: bold; }
+        .pdf-caption { font-size: 12px; font-weight: 500; }
+        
+        @media (max-width: 1200px) and (orientation: portrait) { 
+            body {
+                align-items: flex-start;
+            }
+            .scaling-wrapper {
+                width: 100%;
+                transform: none !important;
+            }
+            .master-container { 
+                flex-direction: column; 
+                align-items: center; 
+                gap: 50px;
+                width: 100%;
+            }
+            .central-content { order: 1; width: 100%; }
+            .side-panel { 
+                order: 2; 
+                width: 100%; 
+                max-width: 500px; 
+                flex-direction: column; 
+                align-items: center;
+            }
+            .side-panel:last-of-type { order: 3; }
+            #princes-list-desktop-main, #bonorum-full-list, .side-image-container, .cross-image-container, .circle-image-container, .tables-image-container, .sigillum-image-container { margin-top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scaling-wrapper">
+        <div class="master-container">
+            <div class="side-panel">
+                <div class="entity-list-wrapper" id="princes-list-desktop-main"><h2>Princes</h2><ul></ul></div>
+                <div class="dee-container">
+                    <h2>John Dee</h2>
+                    <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/John%20Dee.png" alt="John Dee Portrait" id="dee-thumbnail">
+                    
+                    <!-- PDF THUMBNAIL LINK (Przeniesiony z sig1.html) -->
+                    <a href="http://eosforus-box.hf.space/download/Sloane%203188%20oryginal.pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2aWV3ZXIiLCJmaWxlX3BhdGgiOiJTbG9hbmUgMzE4OCBvcnlnaW5hbC5wZGYiLCJleHAiOjQ5MTc2OTU0MTJ9.sl-yhnp-Fl3gkBrNwAIgrus7vXU2QZwSN0CKF32fc8w&preview=true" target="_blank" class="pdf-link-wrapper" title="Otwórz Manuskrypt Sloane 3188">
+                        <div class="pdf-icon-box">
+                            <span class="pdf-label">PDF</span>
+                        </div>
+                        <div class="pdf-caption">Sloane 3188</div>
+                    </a>
+                    <!-- END PDF LINK -->
+
+                </div>
+                <div class="entity-list-wrapper" id="bonorum-full-list"><h2>Kings, Princes & Ministers</h2><ul></ul></div>
+            </div>
+            <div class="central-content">
+                <div class="table-container" id="table-container">
+                    <h1>The Holy Table</h1>
+                    <div class="holy-table" id="holy-table-grid"></div>
+                </div>
+                <div class="loagaeth-container" id="loagaeth-container">
+                    <div class="loagaeth-table" id="loagaeth-table-grid"></div>
+                </div>
+                <div class="bonorum-cross-container">
+                    <div class="bonorum-cross-wrapper" id="bonorum-cross"></div>
+                    <div class="bonorum-diagram-container" id="bonorum-diagram-container"></div>
+                    <div class="planetary-kings-container" id="planetary-kings-container"></div>
+                    
+                    <!-- HEPTAGRAM SEAL CONTAINER -->
+                    <div class="heptagram-seal-container" id="heptagram-seal-container">
+                        <h1>Sigillum Dei Aemeth</h1>
+                        <div id="svg-container"></div>
+                    </div>
+                    <!-- END SEAL CONTAINER -->
+
+                </div>
+            </div>
+            <div class="side-panel">
+                <div class="font-toggle-wrapper">
+                    <button id="toggle-font-btn">Enochian</button>
+                </div>
+                <div class="entity-list-wrapper" id="kings-list-desktop-main"><h2>Kings</h2><ul></ul></div>
+                <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/holytable.png" alt="The Holy Table Diagram" id="holy-table-image-thumbnail">
+                <div class="side-image-container">
+                    <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/table.png" alt="Practice Table" id="loagaeth-practice-thumbnail">
+                </div>
+                <div class="cross-image-container">
+                    <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/cross.png" alt="Cross Diagram" id="cross-image-thumbnail">
+                </div>
+                <div class="circle-image-container">
+                    <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/circle.png" alt="Circle Diagram" id="circle-image-thumbnail">
+                </div>
+                <div class="tables-image-container">
+                    <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/tables.png" alt="Tables Diagram" id="tables-image-thumbnail">
+                </div>
+                <div class="sigillum-image-container">
+                    <img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Sigillum%20Dei.png" alt="Sigillum Dei Aemeth" id="sigillum-dei-thumbnail">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="image-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/holytable.png" alt="Enlarged Holy Table Diagram"></div>
+    <div id="dee-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/John%20Dee.png" alt="Enlarged John Dee Portrait"><div class="dee-description"><b>John Dee</b> (1527-1609) był angielskim matematykiem, astronomem, astrologiem i okultystą, a także doradcą królowej Elżbiety I. Manuskrypt <b>Sloane 3188</b>, zawierający zapisy jego anielskich rozmów, powstał w latach <b>1582-1583</b> we współpracy z medium <b>Edwardem Kelleyem</b>.</div></div>
+    <div id="loagaeth-practice-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/table.png" alt="Enlarged Practice Table"></div>
+    <div id="cross-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/cross.png" alt="Enlarged Cross Diagram"></div>
+    <div id="circle-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/circle.png" alt="Enlarged Circle Diagram"></div>
+    <div id="tables-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/tables.png" alt="Enlarged Tables Diagram"></div>
+    <div id="sigillum-dei-lightbox" class="zoom-lightbox"><img src="https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Sigillum%20Dei.png" alt="Enlarged Sigillum Dei Aemeth"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scalingWrapper = document.querySelector('.scaling-wrapper');
+        const DESKTOP_WIDTH = 1800;
+
+        function applyScaling() {
+            const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+            const isMobileHeight = window.innerHeight <= 500;
+
+            if (isLandscape && isMobileHeight) {
+                const scale = window.innerWidth / DESKTOP_WIDTH;
+                scalingWrapper.style.transform = `scale(${scale})`;
+                const scaledHeight = scalingWrapper.getBoundingClientRect().height;
+                document.body.style.minHeight = `${scaledHeight}px`;
+            } else {
+                scalingWrapper.style.transform = 'none';
+                document.body.style.minHeight = '100vh';
+            }
+        }
+
+        const activeKeys = new Set();
+        let interactionState = 0;
+        const loagaethCellMatrix = [];
+        const bonorumCellMap = new Map();
+        const letterCells = new Map();
+        const GRID_SIZE = 23;
+        let isEnochianActive = false;
+        const latinToEnochianMap = { 'A': 'a', 'B': 'b', 'C': 'c', 'K': 'c', 'D': 'd', 'E': 'e', 'F': 'f', 'G': 'g', 'H': 'h', 'I': 'i', 'J': 'i', 'Y': 'i', 'L': 'l', 'M': 'm', 'N': 'n', 'O': 'o', 'P': 'p', 'Q': 'q', 'R': 'r', 'S': 's', 'T': 't', 'U': 'u', 'V': 'u', 'W': 'u', 'X': 'x', 'Z': 'z' };
+        
+        let animationState = {
+            timer: null,
+            kingId: null,
+            currentRowIndex: 0,
+            isPlaying: false
+        };
+        const enochianData = { data_strings: { left_wall: "arrlueogaoitfrelrsman", top_wall: "nggdofooeeoneglssnoso", right_wall: "lnnyaoauaanbblmpseaoi", bottom_wall: "aspplggzeooeeoanlrlln" }, entities: [ { key: "prince_1", name: "Bagenol", rank: "Prince", side: 'left', startPosOnWall: 1 },{ key: "prince_2", name: "Bralges", rank: "Prince", side: 'left', startPosOnWall: 2 },{ key: "prince_3", name: "Brorges", rank: "Prince", side: 'left', startPosOnWall: 3 },{ key: "prince_4", name: "Blisdon", rank: "Prince", side: 'left', startPosOnWall: 4 },{ key: "prince_5", name: "Butmono", rank: "Prince", side: 'left', startPosOnWall: 5 },{ key: "prince_6", name: "Befafes", rank: "Prince", side: 'left', startPosOnWall: 6 },{ key: "prince_7", name: "Bornogo", rank: "Prince", side: 'left', startPosOnWall: 7 }, { key: "king_1", name: "Baligon", rank: "King", side: 'right', startPosOnWall: 7 },{ key: "king_2", name: "Bobogel", rank: "King", side: 'right', startPosOnWall: 6 },{ key: "king_3", "name": "Babalel", rank: "King", side: 'right', startPosOnWall: 5 },{ key: "king_4", name: "Bynepor", rank: "King", side: 'right', startPosOnWall: 4 },{ key: "king_5", "name": "Bnaspol", rank: "King", side: 'right', startPosOnWall: 3 },{ key: "king_6", name: "Bnapsen", rank: "King", side: 'right', startPosOnWall: 2 },{ key: "king_7", name: "Blumaza", rank: "King", side: 'right', startPosOnWall: 1 } ] };
+        const bonorumData = { tables: { north: [[[7,"A"],[21,"O"],[1,"A"],[26,"E"],[48,"A"],[24,"A"],[13,"R"],[6,"A"],[7,"S"],[29,"A"],[15,"B"],[23,"I"],[8,"B"],[17,"Z"]],[[34,"I"],[8,"O"],[29,"N"],[2,"O"],[33,"A"],[6,"M"],[25,"E"],[36,"A"],[39,"S"],[12,"A"],[30,"O"],[1,"L"],[10,"S"],[21,"N"]],[[49,"A"],[4,"E"],[35,"A"],[40,"M"],[18,"L"],[28,"M"],[23,"L"],[5,"V"],[31,"S"],[25,"L"],[45,"B"],[26,"N"],[32,"N"],[3,"P"]],[[39,"V"],[47,"L"],[3,"A"],[5,"L"],[15,"A"],[36,"N"],[30,"R"],[18,"I"],[19,"A"],[48,"R"],[4,"S"],[27,"R"],[34,"N"],[24,"L"]],[[20,"E"],[19,"R"],[45,"A"],[37,"R"],[32,"I"],[17,"A"],[41,"A"],[38,"R"],[44,"G"],[37,"A"],[20,"R"],[16,"T"],[2,"R"],[22,"N"]],[[10,"A"],[38,"O"],[16,"V"],[27,"A"],[12,"R"],[43,"L"],[22,"Y"],[49,"M"],[43,"V"],[35,"L"],[47,"I"],[9,"F"],[33,"R"],[42,"I"]],[[9,"E"],[44,"A"],[11,"E"],[42,"L"],[31,"A"],[14,"N"],[46,"V"],[13,"I"],[46,"S"],[11,"R"],[41,"R"],[40,"I"],[28,"I"],[14,"A"]]], left: [[[14,"E"],[49,"E"],[7,"F"],[25,"A"],[13,"I"],[47,"F"],[16,"O"]],[[46,"A"],[36,"N"],[44,"L"],[42,"N"],[18,"M"],[45,"O"],[6,"L"]],[[12,"O"],[41,"O"],[26,"I"],[43,"A"],[29,"L"],[39,"B"],[33,"S"]],[[48,"T"],[31,"O"],[2,"O"],[32,"B"],[9,"S"],[38,"A"],[8,"L"]],[[28,"S"],[15,"L"],[27,"A"],[10,"O"],[3,"O"],[30,"S"],[20,"E"]],[[40,"L"],[34,"N"],[37,"S"],[19,"P"],[4,"E"],[5,"O"],[22,"R"]],[[24,"R"],[1,"N"],[35,"O"],[23,"N"],[11,"E"],[21,"N"],[17,"A"]]], center: Array.from({ length: 7 }, (_, r) => Array.from({ length: 7 }, (_, c) => [r * 7 + c + 1, "B"])), right: [[[6,"M"],[41,"T"],[39,"C"],[19,"G"],[49,"N"],[45,"L"],[14,"G"]],[[31,"P"],[25,"M"],[2,"N"],[18,"N"],[44,"E"],[8,"O"],[30,"R"]],[[7,"L"],[15,"A"],[38,"M"],[32,"O"],[43,"M"],[29,"S"],[28,"L"]],[[35,"D"],[37,"L"],[3,"N"],[13,"S"],[42,"I"],[12,"N"],[33,"I"]],[[1,"I"],[17,"P"],[16,"M"],[46,"D"],[5,"M"],[40,"N"],[21,"E"]],[[27,"N"],[23,"S"],[4,"G"],[36,"P"],[26,"P"],[47,"N"],[20,"M"]],[[9,"A"],[10,"M"],[24,"C"],[22,"E"],[34,"O"],[11,"N"],[48,"F"]]], south: [[[36,"E"],[47,"E"],[14,"L"],[27,"F"],[49,"D"],[13,"L"],[16,"N"],[8,"G"],[41,"I"],[16,"O"],[48,"O"],[43,"A"],[17,"A"],[49,"O"]],[[12,"L"],[32,"A"],[26,"G"],[24,"O"],[41,"R"],[31,"L"],[19,"O"],[32,"D"],[19,"I"],[44,"N"],[13,"F"],[47,"G"],[38,"I"],[3,"I"]],[[22,"O"],[29,"O"],[2,"G"],[7,"D"],[25,"R"],[1,"O"],[5,"P"],[7,"E"],[35,"A"],[2,"O"],[27,"A"],[42,"G"],[10,"E"],[18,"T"]],[[6,"A"],[15,"E"],[34,"O"],[4,"M"],[33,"E"],[30,"E"],[20,"L"],[31,"A"],[12,"G"],[25,"A"],[20,"A"],[40,"P"],[15,"L"],[29,"P"]],[[37,"E"],[9,"E"],[18,"O"],[10,"L"],[21,"O"],[28,"E"],[3,"D"],[6,"G"],[23,"D"],[22,"P"],[1,"G"],[30,"G"],[5,"A"],[46,"V"]],[[17,"M"],[39,"A"],[35,"G"],[38,"L"],[8,"E"],[11,"L"],[23,"O"],[37,"G"],[9,"F"],[4,"E"],[24,"E"],[34,"F"],[33,"G"],[21,"F"]],[[44,"O"],[43,"Z"],[48,"R"],[40,"O"],[45,"B"],[42,"A"],[46,"N"],[36,"S"],[45,"I"],[26,"A"],[14,"O"],[39,"N"],[11,"O"],[28,"G"]]]}};
+        const bonorumEntities = [ { id: 1, name: "Baligon", type: "King" }, { id: 2, name: "Bornogo", type: "Prince" }, { id: 3, name: "Bapnido", type: "Minister" }, { id: 4, name: "Besgeme", type: "Minister" }, { id: 5, name: "Blumapo", type: "Minister" }, { id: 6, name: "Bmamgal", type: "Minister" }, { id: 7, name: "Basledf", type: "Minister" }, { id: 8, name: "Bobogel", type: "King" }, { id: 9, name: "Befafes", type: "Prince" }, { id: 10, name: "Basmelo", type: "Minister" }, { id: 11, name: "Bernole", type: "Minister" }, { id: 12, name: "Branglo", type: "Minister" }, { id: 13, name: "Brisfli", type: "Minister" }, { id: 14, name: "Bnagole", type: "Minister" }, { id: 15, name: "Babalel", type: "King" }, { id: 16, "name": "Butmono", type: "Prince" }, { id: 17, name: "Bazpama", type: "Minister" }, { id: 18, name: "Blintom", type: "Minister" }, { id: 19, name: "Bragiop", type: "Minister" }, { id: 20, name: "Bermale", type: "Minister" }, { id: 21, name: "Bonefon", type: "Minister" }, { id: 22, name: "Bynepor", type: "King" }, { id: 23, name: "Blisdon", type: "Prince" }, { id: 24, name: "Balceor", type: "Minister" }, { id: 25, name: "Belmara", type: "Minister" }, { id: 26, name: "Benpagi", type: "Minister" }, { id: 27, name: "Barnafa", type: "Minister" }, { id: 28, name: "Bmilges", type: "Minister" }, { id: 29, name: "Bnaspol", type: "King" }, { id: 30, name: "Brorges", type: "Prince" }, { id: 31, name: "Baspalo", type: "Minister" }, { id: 32, name: "Binodab", type: "Minister" }, { id: 33, name: "Bariges", type: "Minister" }, { id: 34, name: "Binofosn", type: "Minister" }, { id: 35, name: "Baldago", type: "Minister" }, { id: 36, name: "Bnapsen", type: "King" }, { id: 37, name: "Bralges", type: "Prince" }, { id: 38, name: "Bormila", type: "Minister" }, { id: 39, name: "Buscnab", type: "Minister" }, { id: 40, "name": "Bminpol", type: "Minister" }, { id: 41, name: "Bartiro", type: "Minister" }, { id: 42, name: "Bliigan", type: "Minister" }, { id: 43, name: "Blumaza", type: "King" }, { id: 44, name: "Bagenol", type: "Prince" }, { id: 45, name: "Bablibo", type: "Minister" }, { id: 46, name: "Busduna", type: "Minister" }, { id: 47, name: "Blingef", type: "Minister" }, { id: 48, name: "Barfort", type: "Minister" }, { id: 49, name: "Bamnode", type: "Minister" } ].map(e => ({...e, key: `bon_${e.id}`}));
+        const planetaryKingsData = [ { id: "king-bobogel", title: "Sunday - Bobogel", grid: [ "LEENARB", "LNANAEB", "ROEMNAB", "LEAORIB", "NEICIAB", "AOIDIAB" ] }, { id: "king-blumaza", title: "Monday - Blumaza", grid: [ "OESNGLE", "AVZNILN", "YLLMAFS", "NRSOGOO", "NRRCPRN", "LABDGRE" ] }, { id: "king-babalel", title: "Tuesday - Babalel", grid: [ "EILOMFO", "NEOTPTA", "SAGACIY", "ONEDPON", "NOONMAN", "ETEVLGL" ] }, { id: "king-bnaspol", title: "Wednesday - Bnaspol", grid: [ "ELGNSEB", "NLINZVB", "SFAMLLB", "OOGOSRB", "NRPCRRB", "ERGDBAB" ] }, { id: "king-bynepor", title: "Thursday - Bynepor", grid: [ "BBARNFL", "BBAIGAO", "BBALPAE", "BBANIFG", "BBOSNIA", "BBASNOD" ] }, { id: "king-baligon", title: "Friday - Baligon", grid: [ "AOAYNNL", "LBBNAAV", "IOAESPM", "GGLPPSA", "OEEOOEZ", "NLLRLNA" ] }, { id: "king-bnapsen", title: "Saturday - Bnapsen", grid: [ "BANSSZE", "BYAPARE", "BNAMGEN", "BNVAGES", "BLBOPOO", "BABEPEN" ] } ];
+        const PERIMETER_STRING = enochianData.data_strings.left_wall + enochianData.data_strings.top_wall + enochianData.data_strings.right_wall + enochianData.data_strings.bottom_wall;
+        const entitiesByKey = new Map(enochianData.entities.map(e => [e.key, e]));
+        const entitiesByName = new Map(enochianData.entities.map(e => [e.name, e]));
+        
+        enochianData.entities.forEach(entity => {
+            entity.trace = ((side, startPosOnWall) => {
+                const trace = [];
+                let positionOffset = (side === 'left') ? 0 : 42;
+                trace.push(startPosOnWall + positionOffset);
+                let currentIndex = startPosOnWall - 1;
+                for (let i = 0; i < 5; i++) {
+                    currentIndex = (currentIndex + 7) % 42;
+                    trace.push(currentIndex + 1 + positionOffset);
+                }
+                return trace;
+            })(entity.side, entity.startPosOnWall);
+        });
+
+        const constants = {
+            sectorStartIds: [1, 8, 15, 22, 29, 36, 43]
+        };
+
+        function addPlanetaryHighlightsForRow(kingId, rowIndex) {
+            if (kingId === undefined || rowIndex === undefined) return;
+            const rowIndexInt = parseInt(rowIndex);
+
+            if (kingId === 'king-blumaza') {
+                const sectorStartIds = [1, 8, 15, 22, 29, 36, 43];
+                const sectorIndex = (rowIndexInt + 1) % 7;
+                const startId = sectorStartIds[sectorIndex];
+                if (!startId) return;
+                const kingForThisRow = bonorumEntities.find(e => e.id === startId);
+                const princeForThisRow = bonorumEntities.find(e => e.id === startId + 1);
+                if (!kingForThisRow || !princeForThisRow) return;
+                const holyTableKing = entitiesByName.get(kingForThisRow.name);
+                const holyTablePrince = entitiesByName.get(princeForThisRow.name);
+                const password = planetaryKingsData.find(k => k.id === kingId).grid[rowIndexInt];
+                const letterForKing = password.charAt(0).toLowerCase();
+                const letterForPrince = password.charAt(1).toLowerCase();
+                const sdaLocationMap = [ { table: 'bonorum-table-north', half: 'left' }, { table: 'bonorum-table-north', half: 'left' }, { table: 'bonorum-table-north', half: 'right' }, { table: 'bonorum-table-right' }, { table: 'bonorum-table-south', half: 'right' }, { table: 'bonorum-table-south', half: 'left' }, { table: 'bonorum-table-left' } ];
+                for (let i = 0; i < 7; i++) {
+                    const targetEntity = bonorumEntities.find(e => e.id === startId + i);
+                    if (!targetEntity) continue;
+                    const highlightClass = `planetary-${targetEntity.type.toLowerCase()}-highlight`;
+                    const diagramPattern = [1, 1, 2, 3, 4, 5, 6];
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${targetEntity.key}"]`);
+                    if (diagramEl) {
+                        const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${diagramPattern[i]}"]`);
+                        if (rect) rect.classList.add(highlightClass);
+                    }
+                    const location = sdaLocationMap[i];
+                    if (location) {
+                        const sdaCells = bonorumCellMap.get(targetEntity.id) || [];
+                        for (const cell of sdaCells) {
+                            const parentTableId = cell.closest('.bonorum-table').id;
+                            if (parentTableId !== location.table) continue;
+                            let shouldHighlight = false;
+                            if (location.half === 'left' && parseInt(cell.dataset.col) < 7) shouldHighlight = true;
+                            else if (location.half === 'right' && parseInt(cell.dataset.col) >= 7) shouldHighlight = true;
+                            else if (!location.half) shouldHighlight = true;
+                            if (shouldHighlight) cell.classList.add(highlightClass);
+                        }
+                    }
+                }
+                if (holyTableKing) {
+                    const htCell = letterCells.get(holyTableKing.trace[0]);
+                    if (htCell) htCell.classList.add('planetary-king-highlight');
+                }
+                if (holyTablePrince) {
+                    const htCell = letterCells.get(holyTablePrince.trace[0]);
+                    if (htCell) htCell.classList.add('planetary-prince-highlight');
+                }
+                if (holyTableKing) {
+                    const searchPool = findLoagaethCellsForEntity(holyTableKing);
+                    const targetCell = searchPool.find(cell => {
+                        const cellChar = cell.textContent.toLowerCase();
+                        if (cellChar === letterForKing) return true;
+                        if ((letterForKing === 'u' || letterForKing === 'v') && (cellChar === 'u' || cellChar === 'v')) return true;
+                        return false;
+                    });
+                    if (targetCell) targetCell.classList.add('planetary-king-highlight');
+                }
+                if (holyTablePrince) {
+                    const searchPool = findLoagaethCellsForEntity(holyTablePrince);
+                    const targetCell = searchPool.find(cell => {
+                        const cellChar = cell.textContent.toLowerCase();
+                        if (cellChar === letterForPrince) return true;
+                        if ((letterForPrince === 'u' || letterForPrince === 'v') && (cellChar === 'u' || cellChar === 'v')) return true;
+                        return false;
+                    });
+                    if (targetCell) targetCell.classList.add('planetary-prince-highlight');
+                }
+                return;
+            }
+            else if (kingId === 'king-babalel') {
+                const highlightPattern = [6, 6, 5, 4, 3, 2, 1]; 
+                const targetGroupMap = [8, 15, 22, 29, 36, 43]; 
+                const targetAngelStartId = targetGroupMap[rowIndexInt];
+
+                if (!targetAngelStartId) return;
+
+                const angelGroupReversed = [];
+                for (let i = 6; i >= 0; i--) {
+                    const angel = bonorumEntities.find(e => e.id === targetAngelStartId + i);
+                    if (angel) angelGroupReversed.push(angel);
+                }
+                
+                const tuesdayCrossLocationMap = [
+                    { "table": "bonorum-table-left" },
+                    { "table": "bonorum-table-left" },
+                    { "table": "bonorum-table-south", "half": "left" },
+                    { "table": "bonorum-table-south", "half": "right" },
+                    { "table": "bonorum-table-right" },
+                    { "table": "bonorum-table-north", "half": "right" },
+                    { "table": "bonorum-table-north", "half": "left" }
+                ];
+
+                for (let i = 0; i < angelGroupReversed.length; i++) {
+                    const angel = angelGroupReversed[i];
+                    const letterIndexInName = highlightPattern[i];
+                    if (!angel || letterIndexInName >= angel.name.length) continue;
+
+                    const highlightClass = `planetary-${angel.type.toLowerCase()}-highlight`;
+                    const charToFind = angel.name.charAt(letterIndexInName).toUpperCase();
+                    const holyTableEntity = entitiesByName.get(angel.name);
+
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${angel.key}"]`);
+                    if (diagramEl) {
+                        const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${letterIndexInName}"]`);
+                        const text = diagramEl.querySelector(`.diagram-text[data-char-index="${letterIndexInName}"]`);
+                        if (rect) rect.classList.add(highlightClass);
+                        if (text) text.classList.add(highlightClass);
+                    }
+
+                    const location = tuesdayCrossLocationMap[i];
+                    if(location){
+                        const sdaCells = bonorumCellMap.get(angel.id) || [];
+                        for (const cell of sdaCells) {
+                            const cellChar = cell.dataset.latinChar.toUpperCase();
+                            const isMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                            if (isMatch) {
+                                const parentTableId = cell.closest('.bonorum-table').id;
+                                if(parentTableId === location.table){
+                                    cell.classList.add(highlightClass);
+                                }
+                            }
+                        }
+                    }
+                    
+                    if ((angel.type === 'King' || angel.type === 'Prince') && holyTableEntity) {
+                        const traceIndex = letterIndexInName - 1; 
+                        if (traceIndex >= 0 && traceIndex < holyTableEntity.trace.length) {
+                            const htPosition = holyTableEntity.trace[traceIndex];
+                            const htCell = letterCells.get(htPosition);
+                            if (htCell) htCell.classList.add(highlightClass);
+                        }
+
+                        if (letterIndexInName > 0) {
+                            const searchPool = findLoagaethCellsForEntity(holyTableEntity);
+                            const occurrenceTarget = (angel.name.toUpperCase().substring(0, letterIndexInName + 1).split(charToFind).length - 1);
+                            let foundCount = 0;
+                            for (const cell of searchPool) {
+                                const cellChar = cell.dataset.latinChar.toUpperCase();
+                                const isMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                                if (isMatch) {
+                                    foundCount++;
+                                    if (foundCount === occurrenceTarget) {
+                                        cell.classList.add(highlightClass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            else if (kingId === 'king-bnaspol') {
+                const targetSectorMap = [1, 2, 3, 4, 5, 6, 0];
+                const targetSectorIndex = targetSectorMap[rowIndexInt];
+                if (targetSectorIndex === undefined) return;
+
+                const startId = constants.sectorStartIds[targetSectorIndex];
+                if (!startId) return;
+
+                const angelGroupReversed = [];
+                for (let i = 6; i >= 0; i--) {
+                    const angel = bonorumEntities.find(e => e.id === startId + i);
+                    if (angel) angelGroupReversed.push(angel);
+                }
+
+                const highlightPattern = [6, 5, 4, 3, 2, 1, 0];
+
+                const wednesdayCrossLocationMap = [
+                    { "table": "bonorum-table-left" },
+                    { "table": "bonorum-table-south", "half": "left" },
+                    { "table": "bonorum-table-south", "half": "right" },
+                    { "table": "bonorum-table-right" },
+                    { "table": "bonorum-table-north", "half": "right" },
+                    { "table": "bonorum-table-north", "half": "left" },
+                    { "table": "bonorum-table-center" }
+                ];
+
+                for (let i = 0; i < angelGroupReversed.length; i++) {
+                    const angel = angelGroupReversed[i];
+                    const letterIndexInName = highlightPattern[i];
+                    
+                    if (!angel || letterIndexInName >= angel.name.length) continue;
+
+                    const highlightClass = `planetary-${angel.type.toLowerCase()}-highlight`;
+                    const charToFind = angel.name.charAt(letterIndexInName).toUpperCase();
+                    const holyTableEntity = entitiesByName.get(angel.name);
+
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${angel.key}"]`);
+                    if (diagramEl) {
+                        const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${letterIndexInName}"]`);
+                        if (rect) rect.classList.add(highlightClass);
+                    }
+
+                    const location = wednesdayCrossLocationMap[i];
+                    if (location) {
+                        const sdaCells = bonorumCellMap.get(angel.id) || [];
+                        for (const cell of sdaCells) {
+                            const cellChar = cell.dataset.latinChar.toUpperCase();
+                            const isMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+
+                            if (isMatch) {
+                                const parentTableId = cell.closest('.bonorum-table').id;
+                                if (parentTableId !== location.table) continue;
+
+                                let shouldHighlight = false;
+                                const colIndex = parseInt(cell.dataset.col);
+                                
+                                if (location.half === 'left' && colIndex < 7) shouldHighlight = true;
+                                else if (location.half === 'right' && colIndex >= 7) shouldHighlight = true;
+                                else if (!location.half) shouldHighlight = true;
+                                
+                                if (shouldHighlight) {
+                                    cell.classList.add(highlightClass);
+                                }
+                            }
+                        }
+                    }
+
+                    if ((angel.type === 'King' || angel.type === 'Prince') && holyTableEntity) {
+                        const traceIndex = letterIndexInName - 1;
+                        if (traceIndex >= 0 && traceIndex < holyTableEntity.trace.length) {
+                            const htPosition = holyTableEntity.trace[traceIndex];
+                            const htCell = letterCells.get(htPosition);
+                            if (htCell) htCell.classList.add(highlightClass);
+                        }
+
+                        if (letterIndexInName > 0) {
+                            const searchPool = findLoagaethCellsForEntity(holyTableEntity);
+                            const occurrenceTarget = (angel.name.toUpperCase().substring(0, letterIndexInName + 1).split(charToFind).length - 1);
+                            let foundCount = 0;
+                            for (const cell of searchPool) {
+                                 const cellChar = cell.dataset.latinChar.toUpperCase();
+                                 const isMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+
+                                if (isMatch) {
+                                    foundCount++;
+                                    if (foundCount === occurrenceTarget) {
+                                        cell.classList.add(highlightClass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            else if (kingId === 'king-baligon') {
+                const letterIndex = rowIndexInt + 1;
+                const kingKeysInOrder = ['king_1', 'king_2', 'king_3', 'king_4', 'king_5', 'king_6', 'king_7'];
+
+                const fridayCrossLocationMap = [
+                    { table: "bonorum-table-north", half: "left" },
+                    { table: "bonorum-table-north", half: "right" },
+                    { table: "bonorum-table-right" },
+                    { table: "bonorum-table-south", half: "right" },
+                    { table: "bonorum-table-south", half: "left" },
+                    { table: "bonorum-table-left" }
+                ];
+                
+                const location = fridayCrossLocationMap[rowIndexInt];
+                if (!location) return;
+
+                for (const kingKey of kingKeysInOrder) {
+                    const holyTableEntity = entitiesByKey.get(kingKey);
+                    if (!holyTableEntity || letterIndex >= holyTableEntity.name.length) continue;
+
+                    const bonorumEntity = bonorumEntities.find(be => be.name === holyTableEntity.name);
+                    if (!bonorumEntity) continue;
+
+                    const highlightClass = `planetary-king-highlight`;
+                    const charToFind = holyTableEntity.name.charAt(letterIndex).toUpperCase();
+
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${bonorumEntity.key}"]`);
+                    if (diagramEl) {
+                        const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${letterIndex}"]`);
+                        if (rect) rect.classList.add(highlightClass);
+                    }
+
+                    const sdaCells = bonorumCellMap.get(bonorumEntity.id) || [];
+                    for (const cell of sdaCells) {
+                        const cellChar = cell.dataset.latinChar.toUpperCase();
+                        const isCharMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                        if (!isCharMatch) continue;
+
+                        const parentTableId = cell.closest('.bonorum-table').id;
+                        if (parentTableId !== location.table) continue;
+
+                        const colIndex = parseInt(cell.dataset.col);
+                        let isLocationMatch = false;
+                        if (location.half === 'left' && colIndex < 7) isLocationMatch = true;
+                        else if (location.half === 'right' && colIndex >= 7) isLocationMatch = true;
+                        else if (!location.half) isLocationMatch = true;
+                        
+                        if (isLocationMatch) {
+                            cell.classList.add(highlightClass);
+                            break; 
+                        }
+                    }
+
+                    const traceIndex = letterIndex - 1;
+                    if (traceIndex >= 0 && traceIndex < holyTableEntity.trace.length) {
+                        const htPosition = holyTableEntity.trace[traceIndex];
+                        const htCell = letterCells.get(htPosition);
+                        if (htCell) htCell.classList.add(highlightClass);
+                    }
+
+                    if (letterIndex > 0) {
+                        const searchPool = findLoagaethCellsForEntity(holyTableEntity);
+                        
+                        if (charToFind === 'B') {
+                            const bCell = searchPool.find(cell => cell.dataset.latinChar.toUpperCase() === 'B');
+                            if (bCell) {
+                                const targetCol = bCell.dataset.col;
+                                for (const row of loagaethCellMatrix) {
+                                    for (const cell of row) {
+                                        if (cell.dataset.col === targetCol) {
+                                            cell.classList.add(highlightClass);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            const occurrenceTarget = (holyTableEntity.name.toUpperCase().substring(0, letterIndex + 1).split(charToFind).length - 1);
+                            let foundCount = 0;
+                            for (const cell of searchPool) {
+                                const cellChar = cell.dataset.latinChar.toUpperCase();
+                                const isMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                                if (isMatch) {
+                                    foundCount++;
+                                    if (foundCount === occurrenceTarget) {
+                                        cell.classList.add(highlightClass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            else if (kingId === 'king-bynepor') {
+                const universalPattern = [0, 0, 1, 2, 3, 4, 5];
+                const rowMappings = [ { startId: 8 }, { startId: 15 }, { startId: 22 }, { startId: 29 }, { startId: 36 }, { startId: 43 } ];
+                if (rowIndexInt < 0 || rowIndexInt >= rowMappings.length) return;
+                
+                const { startId } = rowMappings[rowIndexInt];
+                const selectedPattern = universalPattern;
+
+                const thursdayCrossLocationMap = [ { table: "bonorum-table-center" }, { table: "bonorum-table-center" }, { table: "bonorum-table-north", half: "left" }, { table: "bonorum-table-north", half: "right" }, { table: "bonorum-table-right" }, { table: "bonorum-table-south", half: "right" }, { table: "bonorum-table-south", half: "left" } ];
+                
+                for (let i = 0; i < 7; i++) {
+                    const targetEntity = bonorumEntities.find(e => e.id === startId + i);
+                    if (!targetEntity) continue;
+
+                    const letterIndexInName = selectedPattern[i];
+                    if (letterIndexInName === undefined || letterIndexInName >= targetEntity.name.length) continue;
+
+                    const highlightClass = `planetary-${targetEntity.type.toLowerCase()}-highlight`;
+                    const charToFind = targetEntity.name.charAt(letterIndexInName).toUpperCase();
+
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${targetEntity.key}"]`);
+                    if (diagramEl) {
+                        const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${letterIndexInName}"]`);
+                        if (rect) rect.classList.add(highlightClass);
+                    }
+
+                    const location = thursdayCrossLocationMap[i];
+                    if (location) {
+                        const sdaCells = bonorumCellMap.get(targetEntity.id) || [];
+                        for (const cell of sdaCells) {
+                            const cellChar = cell.dataset.latinChar.toUpperCase();
+                            const isCharMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                            if (!isCharMatch) continue;
+
+                            const parentTableId = cell.closest('.bonorum-table').id;
+                            if (parentTableId !== location.table) continue;
+
+                            const colIndex = parseInt(cell.dataset.col);
+                            let isLocationMatch = false;
+                            if (location.half === 'left' && colIndex < 7) isLocationMatch = true;
+                            else if (location.half === 'right' && colIndex >= 7) isLocationMatch = true;
+                            else if (!location.half) isLocationMatch = true;
+                            
+                            if (isLocationMatch) {
+                                cell.classList.add(highlightClass);
+                                break; 
+                            }
+                        }
+                    }
+
+                    const holyTableEntity = entitiesByName.get(targetEntity.name);
+                    if (holyTableEntity) {
+                        const traceIndex = letterIndexInName - 1;
+                        if (traceIndex >= 0 && traceIndex < holyTableEntity.trace.length) {
+                            const htPosition = holyTableEntity.trace[traceIndex];
+                            const htCell = letterCells.get(htPosition);
+                            if (htCell) htCell.classList.add(highlightClass);
+                        }
+
+                        if (letterIndexInName > 0) {
+                            const searchPool = findLoagaethCellsForEntity(holyTableEntity);
+                            const occurrenceTarget = (targetEntity.name.toUpperCase().substring(0, letterIndexInName + 1).split(charToFind).length - 1);
+                            let foundCount = 0;
+                            for (const cell of searchPool) {
+                                const cellChar = cell.dataset.latinChar.toUpperCase();
+                                const isMatch = (cellChar === charToFind) || ((charToFind === 'U' || charToFind === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                                if (isMatch) {
+                                    foundCount++;
+                                    if (foundCount === occurrenceTarget) {
+                                        cell.classList.add(highlightClass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            // --- START OF SATURDAY LOGIC ---
+            else if (kingId === 'king-bnapsen') {
+                const sourceKingsPool6 = ['king_2', 'king_3', 'king_4', 'king_5', 'king_6', 'king_7'];
+                const sourceKingsPool7 = ['king_2', 'king_3', 'king_4', 'king_5', 'king_6', 'king_7', 'king_1'];
+                
+                let sourceEnochianEntities = [];
+                const letterIndices = [0, 1, 2, 3, 4, 5, 6];
+                const expectedPassword = planetaryKingsData.find(k => k.id === kingId).grid[rowIndexInt];
+
+                if (rowIndexInt === 0) {
+                    for (let i = 0; i < 7; i++) {
+                        sourceEnochianEntities.push(entitiesByKey.get(sourceKingsPool6[i % 6]));
+                    }
+                } else {
+                    const startIndex = rowIndexInt;
+                    for (let i = 0; i < 7; i++) {
+                        const currentKingIndex = (startIndex + i) % sourceKingsPool7.length;
+                        sourceEnochianEntities.push(entitiesByKey.get(sourceKingsPool7[currentKingIndex]));
+                    }
+                }
+                
+                const highlightClass = 'planetary-king-highlight';
+                const saturdayCrossLocationMap = [
+                    { "table": "bonorum-table-center" },
+                    { "table": "bonorum-table-north", "half": "left" },
+                    { "table": "bonorum-table-north", "half": "right" },
+                    { "table": "bonorum-table-right" },
+                    { "table": "bonorum-table-south", "half": "right" },
+                    { "table": "bonorum-table-south", "half": "left" },
+                    { "table": "bonorum-table-left" }
+                ];
+
+                for (let i = 0; i < 7; i++) {
+                    const sourceEnochian = sourceEnochianEntities[i];
+                    const letterIndex = letterIndices[i];
+                    
+                    if (!sourceEnochian || letterIndex >= sourceEnochian.name.length) continue;
+
+                    const generatedChar = sourceEnochian.name.charAt(letterIndex).toUpperCase();
+                    const expectedChar = expectedPassword.charAt(i).toUpperCase();
+
+                    const isMatch = (generatedChar === expectedChar) || 
+                                    ((generatedChar === 'U' || generatedChar === 'V') && (expectedChar === 'U' || expectedChar === 'V'));
+
+                    if (isMatch) {
+                        const sourceBonorum = bonorumEntities.find(be => be.name === sourceEnochian.name);
+                        if (!sourceBonorum) continue;
+
+                        const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${sourceBonorum.key}"]`);
+                        if (diagramEl) {
+                            const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${letterIndex}"]`);
+                            if (rect) rect.classList.add(highlightClass);
+                        }
+                        
+                        const location = saturdayCrossLocationMap[i];
+                        if (location) {
+                            const sdaCells = bonorumCellMap.get(sourceBonorum.id) || [];
+                            for (const cell of sdaCells) {
+                                const parentTableId = cell.closest('.bonorum-table').id;
+                                if (parentTableId !== location.table) continue;
+                                 
+                                let isInArea = false;
+                                const colIndex = parseInt(cell.dataset.col);
+                                if (location.half === 'left' && colIndex < 7) isInArea = true;
+                                else if (location.half === 'right' && colIndex >= 7) isInArea = true;
+                                else if (!location.half) isInArea = true;
+
+                                const cellChar = cell.dataset.latinChar.toUpperCase();
+                                const isCellMatch = (cellChar === generatedChar) || ((generatedChar === 'U' || generatedChar === 'V') && (cellChar === 'U' || cellChar === 'V'));
+
+                                if (isInArea && isCellMatch) {
+                                   cell.classList.add(highlightClass);
+                                   break; 
+                                }
+                            }
+                        }
+
+                        const traceIndex = letterIndex - 1;
+                        if (traceIndex >= 0 && traceIndex < sourceEnochian.trace.length) {
+                            const htPosition = sourceEnochian.trace[traceIndex];
+                            const htCell = letterCells.get(htPosition);
+                            if (htCell) htCell.classList.add(highlightClass);
+                        }
+
+                        if (letterIndex > 0) {
+                            const searchPool = findLoagaethCellsForEntity(sourceEnochian);
+                            const occurrenceTarget = (sourceEnochian.name.toUpperCase().substring(0, letterIndex + 1).split(generatedChar).length - 1);
+                            let foundCount = 0;
+                            for (const cell of searchPool) {
+                                const cellChar = cell.dataset.latinChar.toUpperCase();
+                                const isLoagaethMatch = (cellChar === generatedChar) || ((generatedChar === 'U' || generatedChar === 'V') && (cellChar === 'U' || cellChar === 'V'));
+                                if (isLoagaethMatch) {
+                                    foundCount++;
+                                    if (foundCount === occurrenceTarget) {
+                                        cell.classList.add(highlightClass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            // --- END OF SATURDAY LOGIC ---
+            else {
+                const kingToStartEntityId = { 'king-baligon': 1, 'king-bobogel': 8, 'king-babalel': 15, 'king-bynepor': 22, 'king-bnaspol': 29, 'king-bnapsen': 36 };
+                let startId = kingToStartEntityId[kingId];
+
+                if (kingId === 'king-bobogel') {
+                    const sectorStartIds = [1, 8, 15, 22, 29, 36, 43];
+                    const sectorIndex = (rowIndexInt + 1) % 7;
+                    startId = sectorStartIds[sectorIndex];
+                }
+                
+                if (!startId) return;
+                for (let i = 0; i < 7; i++) {
+                    const targetEntity = bonorumEntities.find(e => e.id === startId + i);
+                    if (!targetEntity) continue;
+                    const letterIndexInName = 6 - i;
+                    const highlightClass = `planetary-${targetEntity.type.toLowerCase()}-highlight`;
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${targetEntity.key}"]`);
+                    if (diagramEl) {
+                        const rect = diagramEl.querySelector(`.diagram-text-bg[data-char-index="${letterIndexInName}"]`);
+                        if (rect) rect.classList.add(highlightClass);
+                    }
+                    const holyTableEntity = entitiesByName.get(targetEntity.name);
+                    if (holyTableEntity) {
+                        const traceIndex = letterIndexInName - 1;
+                        if (traceIndex >= 0 && traceIndex < holyTableEntity.trace.length) {
+                            const htPosition = holyTableEntity.trace[traceIndex];
+                            const htCell = letterCells.get(htPosition);
+                            if (htCell) htCell.classList.add(highlightClass);
+                        }
+                        const nameWithoutB = holyTableEntity.name.substring(1).toLowerCase();
+                        if (letterIndexInName > 0) {
+                            const letterIndexInShortName = letterIndexInName - 1;
+                            const charToFind = nameWithoutB[letterIndexInShortName];
+                            const searchPool = findLoagaethCellsForEntity(holyTableEntity);
+                            let occurrenceTarget = 0;
+                            for (let k = 0; k <= letterIndexInShortName; k++) {
+                                if (nameWithoutB[k] === charToFind) occurrenceTarget++;
+                            }
+                            let foundCount = 0;
+                            for (const cell of searchPool) {
+                                if (cell.dataset.latinChar.toLowerCase() === charToFind) {
+                                    foundCount++;
+                                    if (foundCount === occurrenceTarget) {
+                                        cell.classList.add(highlightClass);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    const sdaCells = bonorumCellMap.get(targetEntity.id) || [];
+                    for (const cell of sdaCells) {
+                        const parentTableId = cell.closest('.bonorum-table')?.id;
+                        const colIndex = parseInt(cell.dataset.col);
+                        let shouldHighlight = false;
+                        switch(i) {
+                            case 0: if (parentTableId === 'bonorum-table-left') shouldHighlight = true; break;
+                            case 1: if (parentTableId === 'bonorum-table-south' && colIndex < 7) shouldHighlight = true; break;
+                            case 2: if (parentTableId === 'bonorum-table-south' && colIndex >= 7) shouldHighlight = true; break;
+                            case 3: if (parentTableId === 'bonorum-table-right') shouldHighlight = true; break;
+                            case 4: if (parentTableId === 'bonorum-table-north' && colIndex >= 7) shouldHighlight = true; break;
+                            case 5: if (parentTableId === 'bonorum-table-north' && colIndex < 7) shouldHighlight = true; break;
+                            case 6: if (parentTableId === 'bonorum-table-center') shouldHighlight = true; break;
+                        }
+                        if (shouldHighlight) {
+                            cell.classList.add(highlightClass);
+                        }
+                    }
+                }
+            }
+        }
+        
+        function updateCornerHighlights() {
+            const cornerTR = document.getElementById('holy-table-corner-tr');
+            const cornerBL = document.getElementById('holy-table-corner-bl');
+
+            if (!cornerTR || !cornerBL) return;
+
+            cornerTR.classList.remove('king-corner-highlight');
+            cornerBL.classList.remove('prince-corner-highlight');
+
+            const isKingActive = document.querySelector('.king-highlight, .planetary-king-highlight, .bonorum-diagram-name.active.king');
+            if (isKingActive) {
+                cornerTR.classList.add('king-corner-highlight');
+            }
+
+            const isPrinceActive = document.querySelector('.prince-highlight, .planetary-prince-highlight, .bonorum-diagram-name.active.prince');
+            if (isPrinceActive) {
+                cornerBL.classList.add('prince-corner-highlight');
+            }
+        }
+
+        function updateAllVisuals() {
+            const filterClasses = (cn) => {
+                if (cn === 'highlight') return false;
+                const isManualHighlight = cn.endsWith('-highlight') && !cn.startsWith('planetary-');
+                const isManualPoint = cn.endsWith('-point');
+                return !isManualHighlight && !isManualPoint;
+            };
+
+            document.querySelectorAll('.letter-cell, .loagaeth-cell, .center-diagram-cell, .bonorum-cell').forEach(c => {
+                c.className = c.className.split(' ').filter(filterClasses).join(' ');
+            });
+
+            document.querySelectorAll('.diagram-text, .diagram-text-bg').forEach(c => {
+                if (c.className && typeof c.className.baseVal === 'string') {
+                    c.setAttribute('class', c.className.baseVal.split(' ').filter(filterClasses).join(' '));
+                }
+            });
+
+            document.querySelectorAll('button.active, .bonorum-diagram-name.active').forEach(el => el.classList.remove('active', 'king', 'prince', 'minister'));
+            
+            for (const key of activeKeys) { 
+                const entityData = entitiesByKey.get(key); 
+                const bonorumEntity = bonorumEntities.find(be => be.key === key || (entityData && be.name === entityData.name)); 
+                
+                if (entityData) { 
+                    const isKing = entityData.rank === 'King';
+                    entityData.trace.forEach((pos, index) => { 
+                        const cell = letterCells.get(pos); 
+                        if (cell) {
+                            cell.classList.add(isKing ? 'king-highlight' : 'prince-highlight');
+                            if (index === 0) cell.classList.add(isKing ? 'king-start-point' : 'prince-start-point');
+                        } 
+                    }); 
+                    if (interactionState === 2) { 
+                        const nameFragment = entityData.name.substring(1).toLowerCase(); 
+                        let targetCells = findLoagaethCellsForEntity(entityData); 
+                        let nameChars = nameFragment.split('');
+                        let charPositions = {};
+                        nameChars.forEach((char, index) => {
+                            if(!charPositions[char]) charPositions[char] = [];
+                            charPositions[char].push(index);
+                        });
+                        let nameHighlightClass = isKing ? 'loagaeth-king-name-highlight' : 'loagaeth-prince-name-highlight';
+                        let cellCharCounters = {};
+                        targetCells.forEach(cell => {
+                            let cellChar = cell.dataset.latinChar.toLowerCase();
+                             if(cellChar === 'v') cellChar = 'u';
+                            let charToMatch = cellChar;
+                            if(!cellCharCounters[charToMatch]) cellCharCounters[charToMatch] = 0;
+                            let currentCount = cellCharCounters[charToMatch];
+                            if(nameFragment.includes(charToMatch)) {
+                                let indicesInName = nameFragment.split('').map((c, i) => (c === charToMatch || (charToMatch === 'u' && (c === 'u' || c === 'v'))) ? i : -1).filter(i => i !== -1);
+                                if(currentCount < indicesInName.length) {
+                                    cell.classList.add(nameHighlightClass);
+                                }
+                            }
+                            cellCharCounters[charToMatch]++;
+                        });
+                    } 
+                    document.querySelectorAll(`#princes-list-desktop-main button[data-key="${key}"], #kings-list-desktop-main button[data-key="${key}"]`).forEach(btn => btn.classList.add('active')); 
+                } 
+                if (bonorumEntity) { 
+                    const highlightClass = `${bonorumEntity.type.toLowerCase()}-highlight`;
+                    (bonorumCellMap.get(bonorumEntity.id) || []).forEach(cell => cell.classList.add(highlightClass));
+                    document.querySelector(`#bonorum-full-list button[data-key="${bonorumEntity.key}"]`)?.classList.add('active'); 
+                    const diagramEl = document.querySelector(`.bonorum-diagram-name[data-key="${bonorumEntity.key}"]`); 
+                    if (diagramEl) diagramEl.classList.add('active', bonorumEntity.type.toLowerCase()); 
+                } 
+            } 
+            if (interactionState === 1) { 
+                document.querySelectorAll('.loagaeth-cell').forEach(cell => { 
+                    const r = parseInt(cell.dataset.row), c = parseInt(cell.dataset.col); 
+                    if (r >= 3 && r <= 5 && c >= 4 && c <= 7) cell.classList.add('loagaeth-key-highlight'); 
+                }); 
+                document.querySelectorAll('.center-diagram-cell').forEach(cell => cell.classList.add('highlight')); 
+            }
+            updateCornerHighlights();
+        }
+
+        function createHolyTable() { const grid = document.getElementById('holy-table-grid'); const posToCoord = new Map(); for (let i = 0; i < 21; i++) posToCoord.set(i + 1, { r: 22 - i, c: 1 }); for (let i = 0; i < 21; i++) posToCoord.set(i + 22, { r: 1, c: 2 + i }); for (let i = 0; i < 21; i++) posToCoord.set(i + 43, { r: 2 + i, c: 23 }); for (let i = 0; i < 21; i++) posToCoord.set(i + 64, { r: 23, c: 22 - i }); const centralLetters = [["O","I","T"],["R","L","U"],["N","L","R"],["E","O","O"]]; const startRow = Math.floor((GRID_SIZE - 4) / 2) + 1, startCol = Math.floor((GRID_SIZE - 3) / 2) + 1; grid.innerHTML = ''; for (let r = 1; r <= GRID_SIZE; r++) { for (let c = 1; c <= GRID_SIZE; c++) { const cell = document.createElement('div'); cell.classList.add('grid-cell'); if ((r === 1 || r === GRID_SIZE) && (c === 1 || c === GRID_SIZE)) { cell.classList.add('corner-cell'); const letter = 'B'; cell.textContent = letter; cell.dataset.latinChar = letter; if (r === 1 && c === GRID_SIZE) { cell.id = 'holy-table-corner-tr'; } if (r === GRID_SIZE && c === 1) { cell.id = 'holy-table-corner-bl'; } } else if (r >= startRow && r < startRow + 4 && c >= startCol && c < startCol + 3) { cell.classList.add('center-diagram-cell'); const letter = centralLetters[r - startRow][c - startCol]; cell.textContent = letter; cell.dataset.latinChar = letter; } else if (r === 1 || r === GRID_SIZE || c === 1 || c === GRID_SIZE) { for (const [pos, coords] of posToCoord.entries()) { if (coords.r === r && coords.c === c) { cell.classList.add('letter-cell'); cell.id = `cell-${pos}`; const letter = PERIMETER_STRING[pos - 1]; cell.textContent = letter.toUpperCase(); cell.dataset.latinChar = letter.toUpperCase(); letterCells.set(pos, cell); break; } } } grid.appendChild(cell); } } const bg = document.createElement('div'); bg.className = 'inner-grid-background'; grid.appendChild(bg); }
+        function createLoagaethTable() { const loagaethGrid = document.getElementById('loagaeth-table-grid'); loagaethGrid.style.gridTemplateColumns = `repeat(12, var(--cell-size))`; const tabletLetters = [['l','o','n','e','g','a','n','o','g','i','l','a'],['o','g','o','n','r','o','l','e','g','o','b','o'],['s','e','f','a','f','e','l','e','l','a','b','a'],['o','n','o','m','t','u','r','o','p','e','n','y'],['n','o','d','s','i','l','l','o','p','s','a','n'],['s','e','g','r','o','r','n','e','s','p','a','n'],['s','e','g','l','a','r','a','z','a','m','u','l']]; loagaethGrid.innerHTML = ''; loagaethCellMatrix.length = 0; tabletLetters.forEach((row, r) => { const rowArray = []; row.forEach((letter, c) => { const cell = document.createElement('div'); cell.classList.add('loagaeth-cell'); cell.textContent = letter; cell.dataset.latinChar = letter.toUpperCase(); cell.dataset.row = r; cell.dataset.col = c; loagaethGrid.appendChild(cell); rowArray.push(cell); }); loagaethCellMatrix.push(rowArray); }); if (!document.getElementById('loagaeth-clickable-area')) { const clickableArea = document.createElement('div'); clickableArea.id = 'loagaeth-clickable-area'; const container = document.getElementById('loagaeth-container'); container.style.position = 'relative'; container.appendChild(clickableArea); const updateClickableArea = () => { const table = document.getElementById('loagaeth-table-grid'); if(!table) return; const cellSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-size').replace('px', '')); const gridPadding = 5; clickableArea.style.top = `${table.offsetTop + gridPadding + (3 * cellSize)}px`; clickableArea.style.left = `${table.offsetLeft + gridPadding + (4 * cellSize)}px`; clickableArea.style.width = `${4 * cellSize}px`; clickableArea.style.height = `${3 * cellSize}px`; }; updateClickableArea(); window.addEventListener('resize', updateClickableArea); } }
+        function createEntityLists() { const listTargets = [{ type: 'Prince', el: document.querySelector('#princes-list-desktop-main ul') }, { type: 'King', el: document.querySelector('#kings-list-desktop-main ul') }]; listTargets.forEach(target => target.el.innerHTML = ''); enochianData.entities.forEach(entity => { const li = document.createElement('li'); const button = document.createElement('button'); button.textContent = entity.name; button.dataset.key = entity.key; li.appendChild(button); listTargets.forEach(target => { if (entity.rank === target.type) { target.el.appendChild(li.cloneNode(true)); } }); }); }
+        function createBonorumCross() { const wrapper = document.getElementById('bonorum-cross'); wrapper.innerHTML = ''; const tableKeys = ['north', 'left', 'center', 'right', 'south']; const createTable = (tableKey, data) => { const tableEl = document.createElement('div'); tableEl.classList.add('bonorum-table'); tableEl.id = `bonorum-table-${tableKey}`; const numRows = data.length; if (numRows === 0) return tableEl; const numCols = data[0].length; let cellWidthVar = (tableKey === 'north' || tableKey === 'south') ? `calc(var(--b-cell-size) / 2)` : 'var(--b-cell-size)'; tableEl.style.gridTemplateRows = `repeat(${numRows}, var(--b-cell-size))`; tableEl.style.gridTemplateColumns = `repeat(${numCols}, ${cellWidthVar})`; data.forEach((row, r_index) => { row.forEach((cellData, c_index) => { const cell = document.createElement('div'); cell.classList.add('bonorum-cell'); cell.dataset.col = c_index; cell.dataset.row = r_index; const [num, letter] = cellData; cell.innerHTML = (num > 0 || (letter && letter.trim() !== '')) ? `<span>${num || ''}</span>${letter}` : ' '; if (letter) cell.dataset.latinChar = letter.toUpperCase(); if (num > 0) { if (!bonorumCellMap.has(num)) bonorumCellMap.set(num, []); bonorumCellMap.get(num).push(cell); } tableEl.appendChild(cell); }); }); return tableEl; }; tableKeys.forEach(key => { if (bonorumData.tables[key]) { wrapper.appendChild(createTable(key, bonorumData.tables[key])); } }); }
+        function createBonorumList() { const listEl = document.querySelector('#bonorum-full-list ul'); listEl.innerHTML = ''; bonorumEntities.forEach(entity => { const li = document.createElement('li'); const button = document.createElement('button'); button.textContent = `${entity.id} ${entity.name}`; button.dataset.key = entity.key; if (entity.type === "King" || entity.type === "Prince") { button.style.fontWeight = 'bold'; } li.appendChild(button); listEl.appendChild(li); }); }
+        function createBonorumDiagram() { const container = document.getElementById('bonorum-diagram-container'); container.innerHTML = ''; const svgNS = "http://www.w3.org/2000/svg"; const svg = document.createElementNS(svgNS, 'svg'); svg.setAttribute('viewBox', '-300 -300 600 600'); const mainGroup = document.createElementNS(svgNS, 'g'); svg.appendChild(mainGroup); const letterRadii = [110, 135, 160, 185, 210, 235, 260]; const symbolRadius = 92.5; const numberRadius = 75; const sectorNumberRadius = 285; const ringRadii = [275, 247.5, 222.5, 197.5, 172.5, 147.5, 122.5, 100, 85, 65]; const totalEntities = 49; const anglePerEntity = 360 / totalEntities; const backgroundCircle = document.createElementNS(svgNS, 'circle'); backgroundCircle.setAttribute('cx', 0); backgroundCircle.setAttribute('cy', 0); backgroundCircle.setAttribute('r', ringRadii[0]); backgroundCircle.setAttribute('fill', 'var(--table-bg)'); mainGroup.appendChild(backgroundCircle); ringRadii.forEach(r => { const circle = document.createElementNS(svgNS, 'circle'); circle.setAttribute('cx', 0); circle.setAttribute('cy', 0); circle.setAttribute('r', r); circle.classList.add('diagram-ring'); mainGroup.appendChild(circle); }); 
+for (let i = 0; i < 7; i++) { const spokeAngle = -90 + (anglePerEntity * (i * 7 - 0.5)); const spoke = document.createElementNS(svgNS, 'line'); spoke.setAttribute('x1', 0); spoke.setAttribute('y1', 0); const x2 = ringRadii[0] * Math.cos(spokeAngle * Math.PI / 180); const y2 = ringRadii[0] * Math.sin(spokeAngle * Math.PI / 180); spoke.setAttribute('x2', x2); spoke.setAttribute('y2', y2); spoke.classList.add('diagram-spoke'); mainGroup.appendChild(spoke); const sectorAngle = spokeAngle + (anglePerEntity * 3.5); const numX = sectorNumberRadius * Math.cos(sectorAngle * Math.PI / 180); const numY = sectorNumberRadius * Math.sin(sectorAngle * Math.PI / 180); const sectorNumText = document.createElementNS(svgNS, 'text'); sectorNumText.setAttribute('x', numX); sectorNumText.setAttribute('y', numY); sectorNumText.textContent = `${i + 1}`; sectorNumText.classList.add('diagram-sector-number'); mainGroup.appendChild(sectorNumText); } bonorumEntities.forEach((entity, index) => { const nameGroup = document.createElementNS(svgNS, 'g'); nameGroup.dataset.key = entity.key; nameGroup.classList.add('bonorum-diagram-name'); const name = entity.name.toUpperCase(); const textAngle = -90 + (anglePerEntity * index); name.split('').forEach((char, charIndex) => { if (charIndex >= letterRadii.length) return; const radius = letterRadii[charIndex]; const charX = radius * Math.cos(textAngle * Math.PI / 180); const charY = radius * Math.sin(textAngle * Math.PI / 180); const bgSize = 14; const rect = document.createElementNS(svgNS, 'rect'); rect.setAttribute('x', charX - (bgSize / 2)); rect.setAttribute('y', charY - (bgSize / 2)); rect.setAttribute('width', bgSize); rect.setAttribute('height', bgSize); rect.setAttribute('transform', `rotate(${textAngle + 90} ${charX} ${charY})`); rect.classList.add('diagram-text-bg'); rect.dataset.charIndex = charIndex; nameGroup.appendChild(rect); const text = document.createElementNS(svgNS, 'text'); text.setAttribute('x', charX); text.setAttribute('y', charY); text.setAttribute('transform', `rotate(${textAngle + 90} ${charX} ${charY})`); text.textContent = char; text.dataset.latinChar = char.toUpperCase(); text.classList.add('diagram-text'); text.dataset.charIndex = charIndex; nameGroup.appendChild(text); }); mainGroup.appendChild(nameGroup); }); for (let i = 0; i < totalEntities; i++) { const angle = -90 + (i * anglePerEntity); const x = numberRadius * Math.cos(angle * Math.PI / 180); const y = numberRadius * Math.sin(angle * Math.PI / 180); const numText = document.createElementNS(svgNS, 'text'); numText.setAttribute('x', x); numText.setAttribute('y', y); numText.setAttribute('transform', `rotate(${angle + 90} ${x} ${y})`); numText.textContent = i + 1; numText.classList.add('diagram-number'); mainGroup.appendChild(numText); } const symbols = ['♀', '☉', '♂', '♃', '☿', '♄', '☽']; const targetNumbers = [1, 8, 15, 22, 29, 36, 43]; symbols.forEach((symbol, i) => { const numberIndex = targetNumbers[i] - 1; const angle = -90 + (anglePerEntity * numberIndex); const x = symbolRadius * Math.cos(angle * Math.PI / 180); const y = symbolRadius * Math.sin(angle * Math.PI / 180); const symbolText = document.createElementNS(svgNS, 'text'); symbolText.setAttribute('x', x); symbolText.setAttribute('y', y); symbolText.setAttribute('transform', `rotate(${angle + 90} ${x} ${y})`); symbolText.textContent = symbol; if (symbol === '♀') symbolText.id = 'bonorum-symbol-venus'; if (symbol === '☉') symbolText.id = 'bonorum-symbol-sun'; if (symbol === '☽') symbolText.id = 'bonorum-symbol-moon'; if (symbol === '♂') symbolText.id = 'bonorum-symbol-mars'; if (symbol === '♃') symbolText.id = 'bonorum-symbol-jupiter'; if (symbol === '☿') symbolText.id = 'bonorum-symbol-mercury'; if (symbol === '♄') symbolText.id = 'bonorum-symbol-saturn'; symbolText.classList.add('diagram-symbol'); mainGroup.appendChild(symbolText); }); container.appendChild(svg); }
+        function createPlanetaryKingsGrids() {
+            const container = document.getElementById('planetary-kings-container');
+            container.innerHTML = '';
+            planetaryKingsData.forEach(king => {
+                const squareWrapper = document.createElement('div');
+                squareWrapper.className = 'planetary-king-square';
+                squareWrapper.id = king.id;
+                const titleEl = document.createElement('h3');
+                if (king.id === 'king-bnapsen') {
+                    titleEl.innerHTML = `${king.title} <span style="color: #e63946; font-weight: normal;">(unsolved)</span>`;
+                } else {
+                    titleEl.textContent = king.title;
+                }
+                squareWrapper.appendChild(titleEl);
+                if (['king-bobogel', 'king-blumaza', 'king-babalel', 'king-bnaspol', 'king-bynepor', 'king-baligon', 'king-bnapsen'].includes(king.id)) {
+                    const playButton = document.createElement('button');
+                    playButton.className = 'play-button';
+                    playButton.dataset.kingId = king.id;
+                    playButton.innerHTML = `<div class="icon play-icon"></div><div class="icon pause-icon"></div>`;
+                    squareWrapper.appendChild(playButton);
+                }
+                const grid = document.createElement('div');
+                grid.className = 'planetary-king-grid';
+                king.grid.forEach((rowString, rowIndex) => {
+                    const rowEl = document.createElement('div');
+                    rowEl.className = 'planetary-king-row';
+                    rowEl.dataset.kingId = king.id;
+                    rowEl.dataset.rowIndex = rowIndex;
+                    rowString.split('').forEach((char) => {
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell letter-cell';
+                        cell.textContent = char.toUpperCase();
+                        cell.dataset.latinChar = char.toUpperCase();
+                        rowEl.appendChild(cell);
+                    });
+                    grid.appendChild(rowEl);
+                });
+                squareWrapper.appendChild(grid);
+                if (king.id === 'king-bobogel') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Ave.png';
+                    keySymbol.alt = 'Ave Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-bobogel';
+                    keySymbol.dataset.symbolName = 'Ave';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                 if (king.id === 'king-blumaza') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Ilemese.png';
+                    keySymbol.alt = 'Ilemese Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-blumaza';
+                    keySymbol.dataset.symbolName = 'Ilemese';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                if (king.id === 'king-babalel') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Liba.png';
+                    keySymbol.alt = 'Liba Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-babalel';
+                    keySymbol.dataset.symbolName = 'Liba';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                if (king.id === 'king-bnaspol') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/An.png';
+                    keySymbol.alt = 'An Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-bnaspol';
+                    keySymbol.dataset.symbolName = 'An';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                if (king.id === 'king-bynepor') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Rocle.png';
+                    keySymbol.alt = 'Rocle Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-bynepor';
+                    keySymbol.dataset.symbolName = 'Rocle';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                 if (king.id === 'king-baligon') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/el.png';
+                    keySymbol.alt = 'El Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-baligon';
+                    keySymbol.dataset.symbolName = 'El';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                if (king.id === 'king-bnapsen') {
+                    const keySymbol = document.createElement('img');
+                    keySymbol.src = 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/Hagonel.png';
+                    keySymbol.alt = 'Hagonel Symbol';
+                    keySymbol.className = 'planetary-key-symbol';
+                    keySymbol.dataset.kingId = 'king-bnapsen';
+                    keySymbol.dataset.symbolName = 'Hagonel';
+                    squareWrapper.appendChild(keySymbol);
+                }
+                container.appendChild(squareWrapper);
+            });
+        }
+        // --- START: NEW FUNCTION TO CREATE THE SIGILLUM DEI AEMETH (FULL RESTORED VERSION WITH IDs) ---
+        function createHeptagramSeal() {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const container = document.getElementById('svg-container');
+            
+            // Clear previous SVG if any
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+
+            const svg = document.createElementNS(svgNS, 'svg');
+            const size = 900;
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            svg.setAttribute('viewBox', `15 15 870 870`);
+            container.appendChild(svg);
+
+            const defs = document.createElementNS(svgNS, 'defs');
+            const filter = document.createElementNS(svgNS, 'filter');
+            filter.setAttribute('id', 'fatten');
+            const morphology = document.createElementNS(svgNS, 'feMorphology');
+            morphology.setAttribute('in', 'SourceGraphic');
+            morphology.setAttribute('operator', 'dilate');
+            morphology.setAttribute('radius', '0.5');
+            filter.appendChild(morphology);
+            defs.appendChild(filter);
+            svg.insertBefore(defs, svg.firstChild);
+
+            const centerX = size / 2, centerY = size / 2;
+
+            // --- Helper Functions ---
+            function drawLine(p1, p2) { if (!p1 || !p2) return; const l = document.createElementNS(svgNS, 'line'); l.setAttribute('x1', p1.x); l.setAttribute('y1', p1.y); l.setAttribute('x2', p2.x); l.setAttribute('y2', p2.y); l.setAttribute('class', 'line-segment'); svg.appendChild(l); }
+            function drawCircle(r) { const c = document.createElementNS(svgNS, 'circle'); c.setAttribute('cx', centerX); c.setAttribute('cy', centerY); c.setAttribute('r', r); c.setAttribute('class', 'line-segment'); svg.appendChild(c); }
+            function getVertices(s, r, a = 0) { const v = []; const st = (2 * Math.PI) / s; for (let i = 0; i < s; i++) { const ang = a + i * st; v.push({ x: centerX + r * Math.cos(ang), y: centerY + r * Math.sin(ang) }); } return v; }
+            function getPointOnLine(p1, p2, t) { return { x: p1.x * (1 - t) + p2.x * t, y: p1.y * (1 - t) + p2.y * t }; }
+            function lineIntersection(p1, p2, p3, p4) { const d = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x); if (Math.abs(d) < 1e-9) return null; const t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / d; const u = -((p1.x - p2.x) * (p1.y - p3.y) - (p1.y - p2.y) * (p1.x - p3.x)) / d; if (t > 1e-9 && t < 1 - 1e-9 && u > 1e-9 && u < 1 - 1e-9) { return { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y), dist: Math.hypot(p1.x-(p1.x + t * (p2.x - p1.x)), p1.y - (p1.y + t * (p2.y - p1.y)))}; } return null; }
+            
+            function drawAlignedText(characterArray, x, y, options) {
+                const { fontSize = 17, rotation = 0, fontWeight = 'bold', id = null } = options;
+                const group = document.createElementNS(svgNS, 'g');
+                group.setAttribute('transform', `translate(${x}, ${y}) rotate(${rotation})`);
+                if (id) group.id = id;
+                
+                const letterSlotWidth = fontSize * 0.58; 
+                const spaceSlotWidth = fontSize * 0.7;
+                const symbolSlotWidth = fontSize * 0.9; 
+
+                let totalWidth = 0;
+                characterArray.forEach(part => {
+                    if (part.char) {
+                        totalWidth += (part.char === ' ') ? spaceSlotWidth : letterSlotWidth;
+                    } else {
+                        totalWidth += symbolSlotWidth;
+                    }
+                });
+                
+                let currentX = -totalWidth / 2;
+                const bgRect = document.createElementNS(svgNS, 'rect');
+                bgRect.setAttribute('x', currentX); bgRect.setAttribute('y', -fontSize * 0.6); bgRect.setAttribute('width', totalWidth); bgRect.setAttribute('height', fontSize * 1.2); bgRect.setAttribute('class', 'seal-highlight-bg');
+                group.appendChild(bgRect);
+
+                characterArray.forEach(part => {
+                    let currentSlotWidth;
+                     if (part.char) {
+                        currentSlotWidth = (part.char === ' ') ? spaceSlotWidth : letterSlotWidth;
+                    } else {
+                        currentSlotWidth = symbolSlotWidth;
+                    }
+                    const slotCenterX = currentX + currentSlotWidth / 2;
+
+                    if (part.char) {
+                        const textEl = document.createElementNS(svgNS, 'text');
+                        textEl.setAttribute('x', slotCenterX); textEl.setAttribute('y', 0); textEl.setAttribute('class', 'symbol-text'); textEl.setAttribute('font-size', fontSize); textEl.setAttribute('font-weight', fontWeight); textEl.textContent = part.char;
+                        group.appendChild(textEl);
+                    }
+                    else if (part.base || part.sup) {
+                        const scriptSize = fontSize * 0.65;
+                        if (part.base) {
+                            const baseText = document.createElementNS(svgNS, 'text');
+                            baseText.setAttribute('x', slotCenterX); baseText.setAttribute('y', 0); baseText.setAttribute('class', 'symbol-text'); baseText.setAttribute('font-size', fontSize); baseText.setAttribute('font-weight', fontWeight); baseText.textContent = part.base;
+                            group.appendChild(baseText);
+                        }
+                        if (part.sup) {
+                            const supText = document.createElementNS(svgNS, 'text');
+                            let supY = -fontSize * 0.4; if (part.sup === '26' && part.dot_above) supY = 0;
+                            supText.setAttribute('x', slotCenterX); supText.setAttribute('y', supY); supText.setAttribute('class', 'symbol-text'); supText.setAttribute('font-size', scriptSize); supText.setAttribute('font-weight', fontWeight); supText.textContent = part.sup;
+                            group.appendChild(supText);
+                        }
+                        if (part.sub) {
+                            const subText = document.createElementNS(svgNS, 'text');
+                            subText.setAttribute('x', slotCenterX); subText.setAttribute('y', fontSize * 0.4); subText.setAttribute('class', 'symbol-text'); subText.setAttribute('font-size', scriptSize); subText.setAttribute('font-weight', fontWeight); subText.textContent = part.sub;
+                            group.appendChild(subText);
+                        }
+                        if (part.dot_below) {
+                            const dotText = document.createElementNS(svgNS, 'text');
+                            let dotY = fontSize * 0.7; if(part.sub) dotY = fontSize * 1.05; else if (part.sup) dotY = fontSize * 0.25; if(part.base === "E") dotY = fontSize * 0.3;
+                            dotText.setAttribute('x', slotCenterX); dotText.setAttribute('y', dotY); dotText.setAttribute('class', 'symbol-text'); dotText.setAttribute('font-size', fontSize); dotText.textContent = '•';
+                            group.appendChild(dotText);
+                        }
+                        if (part.dot_above) {
+                            const dotText = document.createElementNS(svgNS, 'text');
+                            let dotY = -fontSize * 0.95; if (part.sup === '26') dotY = -fontSize * 0.45;
+                            dotText.setAttribute('x', slotCenterX); dotText.setAttribute('y', dotY); dotText.setAttribute('class', 'symbol-text'); dotText.setAttribute('font-size', fontSize); dotText.textContent = '•';
+                            group.appendChild(dotText);
+                        }
+                    }
+                    currentX += currentSlotWidth;
+                });
+                svg.appendChild(group);
+            }
+
+            // --- Geometry Drawing ---
+            const angleOffset = -Math.PI / 2;
+            const rOuter = size / 2 - 15, rInnerRing = rOuter - 40;
+            drawCircle(rOuter); drawCircle(rInnerRing);
+            const cells = 40; const oPoints = getVertices(cells, rOuter, angleOffset), iPoints = getVertices(cells, rInnerRing, angleOffset);
+            for(let i = 0; i < cells; i++) drawLine(oPoints[i], iPoints[i]);
+
+            const outerRingData = ['4T','9G','7n','t9','22h','n','6m','22o','20a','14n','6a','h','18o','26l','l30','n','l8','7G','13r','H12','og','y15','t11','o8','e21','10b','11A','15I','8a','r16','n','6A','o10','5G','h14','o17','S','a5','a24','6W'];
+            const rTextOuter = (rOuter + rInnerRing) / 2;
+            for(let i = 0; i < outerRingData.length; i++) {
+                const item = outerRingData[i];
+                const angleRad = angleOffset + (i + 0.5) * (2 * Math.PI / cells);
+                const angleDeg = angleRad * 180 / Math.PI;
+                const centerPoint = { x: centerX + rTextOuter * Math.cos(angleRad), y: centerY + rTextOuter * Math.sin(angleRad) };
+                
+                const textEl = document.createElementNS(svgNS, 'text');
+                textEl.setAttribute('x', centerPoint.x); textEl.setAttribute('y', centerPoint.y); textEl.setAttribute('transform', `rotate(${angleDeg + 90}, ${centerPoint.x}, ${centerPoint.y})`); textEl.setAttribute('class', 'symbol-text'); textEl.setAttribute('font-size', 15);
+
+                const match = item.match(/^(\d+)?([a-zA-Z]+)(\d+)?$/);
+                 if (match) {
+                    const [, topNum, letters, bottomNum] = match;
+                    if (topNum) {
+                         const tspan1 = document.createElementNS(svgNS, 'tspan'); tspan1.setAttribute('dy', '-0.5em'); tspan1.textContent = topNum;
+                         const tspan2 = document.createElementNS(svgNS, 'tspan'); tspan2.setAttribute('x', centerPoint.x); tspan2.setAttribute('dy', '1em'); tspan2.textContent = letters;
+                         textEl.appendChild(tspan1); textEl.appendChild(tspan2);
+                    } else if (bottomNum) {
+                         const tspan1 = document.createElementNS(svgNS, 'tspan'); tspan1.setAttribute('dy', '-0.5em'); tspan1.textContent = letters;
+                         const tspan2 = document.createElementNS(svgNS, 'tspan'); tspan2.setAttribute('x', centerPoint.x); tspan2.setAttribute('dy', '1em'); tspan2.textContent = bottomNum;
+                         textEl.appendChild(tspan1); textEl.appendChild(tspan2);
+                    } else { textEl.textContent = letters; }
+                } else { textEl.textContent = item; }
+                svg.appendChild(textEl);
+            }
+
+            const rHOuter = rInnerRing, hThick = 50, rHInner = rHOuter - hThick;
+
+            const sIndexForG = outerRingData.findIndex(item => item === 'S');
+            if (sIndexForG !== -1) {
+                const angleRadForG = angleOffset + (sIndexForG + 0.5) * (2 * Math.PI / cells);
+                const imageRadiusForG = rHInner + (rInnerRing - rHInner) * 0.7;
+                const imageSizeForG = 38;
+                const imageXForG = centerX + imageRadiusForG * Math.cos(angleRadForG);
+                const imageYForG = centerY + imageRadiusForG * Math.sin(angleRadForG);
+                const angleDegForG = angleRadForG * 180 / Math.PI;
+                const rotationForG = angleDegForG + 90;
+                const gSymbol = document.createElementNS(svgNS, 'image');
+                gSymbol.setAttribute('href', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/G.png');
+                gSymbol.setAttribute('width', imageSizeForG); gSymbol.setAttribute('height', imageSizeForG); gSymbol.setAttribute('x', imageXForG - (imageSizeForG / 2)); gSymbol.setAttribute('y', imageYForG - (imageSizeForG / 2)); gSymbol.setAttribute('transform', `rotate(${rotationForG}, ${imageXForG}, ${imageYForG})`);
+                svg.appendChild(gSymbol);
+            }
+            
+            const addSymbolOrText = (targetItem, type, value, offsetFactor, sizeOrSize, isImage) => {
+                const idx = outerRingData.findIndex(item => item === targetItem);
+                if (idx !== -1) {
+                    const angle = angleOffset + (idx + (type==='text'?0.5:(targetItem==='7n'?0.9:targetItem==='a5'||targetItem==='H12'?0.7:targetItem==='6A'?0:0.5))) * (2 * Math.PI / cells);
+                    const radius = rHInner + (rInnerRing - rHInner) * offsetFactor;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    const rot = (angle * 180 / Math.PI) + 90;
+                    if (isImage) {
+                        const img = document.createElementNS(svgNS, 'image');
+                        img.setAttribute('href', value); img.setAttribute('width', sizeOrSize); img.setAttribute('height', sizeOrSize); img.setAttribute('x', x - sizeOrSize/2); img.setAttribute('y', y - sizeOrSize/2); img.setAttribute('transform', `rotate(${rot}, ${x}, ${y})`);
+                        svg.appendChild(img);
+                    } else {
+                        const txt = document.createElementNS(svgNS, 'text');
+                        txt.setAttribute('x', x); txt.setAttribute('y', y); txt.setAttribute('transform', `rotate(${rot}, ${x}, ${y})`); txt.setAttribute('class', 'symbol-text'); txt.setAttribute('font-size', sizeOrSize); txt.setAttribute('font-weight', 'bold'); txt.textContent = value;
+                        svg.appendChild(txt);
+                    }
+                }
+            };
+            addSymbolOrText('a5', 'text', '5', 0.6, 20, false);
+            addSymbolOrText('7n', 'image', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/OG.png', 0.6, 30, true);
+            addSymbolOrText('22o', 'image', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/H.png', 0.6, 28, true);
+            addSymbolOrText('14n', 'text', '14', 0.7, 18, false);
+            addSymbolOrText('26l', 'image', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/T.png', 0.7, 35, true);
+            addSymbolOrText('l30', 'text', '9', 0.7, 20, false);
+            addSymbolOrText('H12', 'image', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/XE.png', 0.7, 34, true);
+            addSymbolOrText('og', 'text', '21', 0.7, 20, false);
+            addSymbolOrText('10b', 'image', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/L.png', 0.7, 34, true);
+            addSymbolOrText('11A', 'text', '30', 0.7, 20, false);
+            addSymbolOrText('6A', 'image', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/A.png', 0.7, 30, true);
+            addSymbolOrText('o10', 'text', '24', 0.7, 18, false);
+
+            const hOV = getVertices(7, rHOuter, angleOffset), hIV = getVertices(7, rHInner, angleOffset);
+            const heptagonLetters = [['Z','l','l','R','H','i','a'],['a','Z','C','a','a','c','b'],['p','a','u','p','n','h','r'],['h','d','m','h','i','a','i'],['k','k','a','a','e','e','e'],['i','i','e','e','l','l','l'],['e','e','l','l','M','G','✠']];
+            const parseCode = (str) => str.split('').map(c => ({ char: c }));
+            const heptagonWallCodes = [[ ...parseCode('S A A I'), { sup: '21', sub: '8', dot_below: true }, ...parseCode(' E M E'), { sup: '8', dot_below: true } ], [ ...parseCode('B T Z K A S E'), { sup: '30', dot_below: true } ], parseCode('H E I D E N E'), [ ...parseCode('D E I M O '), { sup: '30', dot_below: true }, ...parseCode(' A') ], [ { char: 'I' }, { sup: '26', dot_above: true }, ...parseCode(' M E G C B E') ], [ ...parseCode('I L A O I'), { sup: '21', sub: '8', dot_below: true }, ...parseCode(' V N') ], [ ...parseCode('I H R L A A'), { sup: '21', sub: '8', dot_below: true } ]];
+
+            for (let i = 0; i < 7; i++) { 
+                const p_o1 = hOV[i], p_o2 = hOV[(i + 1) % 7], p_i1 = hIV[i], p_i2 = hIV[(i + 1) % 7]; 
+                drawLine(p_o1, p_o2); drawLine(p_i1, p_i2); drawLine(p_o1, p_i1); 
+                const divs = 7; 
+                for (let j = 1; j < divs; j++) { drawLine(getPointOnLine(p_o1, p_o2, j/divs), getPointOnLine(p_i1, p_i2, j/divs)); } 
+                const midPointForRotation = getPointOnLine(p_o1, p_o2, 0.5); const angleForTextRad = Math.atan2(midPointForRotation.y - centerY, midPointForRotation.x - centerX); const rotation = (angleForTextRad * 180 / Math.PI) + 90;
+                for (let j = 0; j < divs; j++) {
+                    const textEl = document.createElementNS(svgNS, 'text');
+                    const letter = heptagonLetters[i][j];
+                    const fraction = (j + 0.5) / divs;
+                    const cellCenterX = (getPointOnLine(p_o1, p_o2, fraction).x + getPointOnLine(p_i1, p_i2, fraction).x) / 2;
+                    const cellCenterY = (getPointOnLine(p_o1, p_o2, fraction).y + getPointOnLine(p_i1, p_i2, fraction).y) / 2;
+                    textEl.setAttribute('x', cellCenterX); textEl.setAttribute('y', cellCenterY); textEl.setAttribute('transform', `rotate(${rotation}, ${cellCenterX}, ${cellCenterY})`); textEl.setAttribute('class', 'symbol-text'); textEl.setAttribute('font-size', letter === '✠' ? 24 : 20); if(letter !== '✠') textEl.setAttribute('font-weight', 'bold'); textEl.textContent = letter; svg.appendChild(textEl);
+                }
+                const midPointInner = getPointOnLine(p_i1, p_i2, 0.5); const vecX = midPointInner.x - centerX, vecY = midPointInner.y - centerY; const vecMag = Math.hypot(vecX, vecY); const textOffset = 24; const textX = midPointInner.x - (vecX / vecMag) * textOffset; const textY = midPointInner.y - (vecY / vecMag) * textOffset;
+                drawAlignedText(heptagonWallCodes[i], textX, textY, { fontSize: 16, rotation: rotation, fontWeight: 'bold' });
+            }
+            
+            const rCrossHeptagon = rHInner + hThick * 0.70; 
+            const smallAngleOffset = 3 * (Math.PI / 49);
+            for (let i = 0; i < 7; i++) {
+                const vertexAngleRad = angleOffset + i * (2 * Math.PI / 7);
+                const angleLeft = vertexAngleRad - smallAngleOffset; const xL = centerX + rCrossHeptagon * Math.cos(angleLeft); const yL = centerY + rCrossHeptagon * Math.sin(angleLeft); const p1_left = hOV[(i + 6) % 7]; const p2_left = hOV[i]; const mid_left = getPointOnLine(p1_left, p2_left, 0.5); const rotation_left = (Math.atan2(mid_left.y - centerY, mid_left.x - centerX) * 180 / Math.PI) + 90;
+                const textElL = document.createElementNS(svgNS, 'text'); textElL.setAttribute('x', xL); textElL.setAttribute('y', yL); textElL.setAttribute('class', 'symbol-text'); textElL.setAttribute('font-size', 24); textElL.setAttribute('transform', `rotate(${rotation_left}, ${xL}, ${yL})`); textElL.textContent = '✠'; svg.appendChild(textElL);
+                const angleRight = vertexAngleRad + smallAngleOffset; const xR = centerX + rCrossHeptagon * Math.cos(angleRight); const yR = centerY + rCrossHeptagon * Math.sin(angleRight); const p1_right = hOV[i]; const p2_right = hOV[(i + 1) % 7]; const mid_right = getPointOnLine(p1_right, p2_right, 0.5); const rotation_right = (Math.atan2(mid_right.y - centerY, mid_right.x - centerX) * 180 / Math.PI) + 90;
+                const textElR = document.createElementNS(svgNS, 'text'); textElR.setAttribute('x', xR); textElR.setAttribute('y', yR); textElR.setAttribute('class', 'symbol-text'); textElR.setAttribute('font-size', 24); textElR.setAttribute('transform', `rotate(${rotation_right}, ${xR}, ${yR})`); textElR.textContent = '✠'; svg.appendChild(textElR);
+            }
+
+            const rSOuter = rHInner, sThick = 45, rSInner = rSOuter - sThick;
+            const sOV = getVertices(7, rSOuter, angleOffset), sIV = getVertices(7, rSInner, angleOffset);
+            const heptagramBands = []; for (let i = 0; i < 7; i++) { heptagramBands.push({ index: i, outer: { start: sOV[i], end: sOV[(i + 2) % 7] }, inner: { start: sIV[i], end: sIV[(i + 2) % 7] } }); }
+            const heptagramIntersections = []; for (let i = 0; i < 7; i++) { for (let j = i + 1; j < 7; j++) { const p = lineIntersection(heptagramBands[i].outer.start, heptagramBands[i].outer.end, heptagramBands[j].outer.start, heptagramBands[j].outer.end); if (p) { heptagramIntersections.push({ bands: [i, j] }); } } }
+            heptagramBands.forEach(band => { [band.outer, band.inner].forEach(line => { const breakIntervals = []; heptagramIntersections.forEach(inter => { if (!inter.bands.includes(band.index)) return; const otherBandIndex = inter.bands.find(idx => idx !== band.index); const isVerticalBreak = (band.index + otherBandIndex) % 2 === 0; const p1 = lineIntersection(line.start, line.end, heptagramBands[otherBandIndex].outer.start, heptagramBands[otherBandIndex].outer.end); const p2 = lineIntersection(line.start, line.end, heptagramBands[otherBandIndex].inner.start, heptagramBands[otherBandIndex].inner.end); if (p1 && p2) { if (isVerticalBreak && (band.index > otherBandIndex)) { breakIntervals.push({ start: Math.min(p1.dist, p2.dist), end: Math.max(p1.dist, p2.dist) }); } if (!isVerticalBreak && (band.index < otherBandIndex)) { breakIntervals.push({ start: Math.min(p1.dist, p2.dist), end: Math.max(p1.dist, p2.dist) }); } } }); breakIntervals.sort((a,b) => a.start - b.start); let lastPoint = line.start; const lineLength = Math.hypot(line.end.x - line.start.x, line.end.y - line.start.y); breakIntervals.forEach(interval => { const breakStartPoint = getPointOnLine(line.start, line.end, interval.start / lineLength); drawLine(lastPoint, breakStartPoint); lastPoint = getPointOnLine(line.start, line.end, interval.end / lineLength); }); drawLine(lastPoint, line.end); }); });
+            
+            function createCrossOnBand(band, fraction, rotation, verticalOffset) {
+                const outerPoint = getPointOnLine(band.outer.start, band.outer.end, fraction);
+                const innerPoint = getPointOnLine(band.inner.start, band.inner.end, fraction);
+                const point = getPointOnLine(outerPoint, innerPoint, verticalOffset);
+                const cross = document.createElementNS(svgNS, 'text');
+                cross.setAttribute('x', point.x); cross.setAttribute('y', point.y); cross.setAttribute('transform', `rotate(${rotation}, ${point.x}, ${point.y})`); cross.setAttribute('class', 'symbol-text'); cross.setAttribute('font-size', 24); cross.textContent = '✠'; svg.appendChild(cross);
+            }
+
+            const bandIndex = 6;
+            const outerMidPoint = getPointOnLine(heptagramBands[bandIndex].outer.start, heptagramBands[bandIndex].outer.end, 0.5);
+            const innerMidPoint = getPointOnLine(heptagramBands[bandIndex].inner.start, heptagramBands[bandIndex].inner.end, 0.5);
+            const letterIX = (outerMidPoint.x + innerMidPoint.x) / 2; const letterIY = (outerMidPoint.y + innerMidPoint.y) / 2;
+            const iText = document.createElementNS(svgNS, 'text'); iText.setAttribute('x', letterIX); iText.setAttribute('y', letterIY); iText.setAttribute('class', 'symbol-text'); iText.setAttribute('font-size', 20); iText.setAttribute('font-weight', 'bold'); iText.textContent = 'I'; svg.appendChild(iText);
+            const sText = document.createElementNS(svgNS, 'text'); sText.setAttribute('x', letterIX); sText.setAttribute('y', innerMidPoint.y + 15); sText.setAttribute('class', 'symbol-text'); sText.setAttribute('font-size', 20); sText.setAttribute('font-weight', 'bold'); sText.textContent = 'S'; svg.appendChild(sText);
+            
+            const sX = letterIX; const sY = innerMidPoint.y + 15; const crossSpacing = 15; const initialOffset = 20;
+            for (let i = 0; i < 3; i++) { const cross = document.createElementNS(svgNS, 'text'); cross.setAttribute('x', sX - initialOffset - (i * crossSpacing)); cross.setAttribute('y', sY); cross.setAttribute('class', 'symbol-text'); cross.setAttribute('font-size', 16); cross.textContent = '✠'; svg.appendChild(cross); }
+            for (let i = 0; i < 4; i++) { const cross = document.createElementNS(svgNS, 'text'); cross.setAttribute('x', sX + initialOffset + (i * crossSpacing)); cross.setAttribute('y', sY); cross.setAttribute('class', 'symbol-text'); cross.setAttribute('font-size', 16); cross.textContent = '✠'; svg.appendChild(cross); }
+            
+            const elGroup = document.createElementNS(svgNS, 'g'); elGroup.id = 'seal-symbol-el';
+            const elBg = document.createElementNS(svgNS, 'rect'); const imageSize = 20; const elX = letterIX; const elY = innerMidPoint.y + 25 + (imageSize / 2); elBg.setAttribute('x', elX - imageSize*1.5/2); elBg.setAttribute('y', elY - imageSize*1.5/2); elBg.setAttribute('width', imageSize*1.5); elBg.setAttribute('height', imageSize*1.5); elBg.setAttribute('class', 'seal-highlight-bg'); elGroup.appendChild(elBg);
+            const elSymbol = document.createElementNS(svgNS, 'image'); elSymbol.setAttribute('href', 'https://raw.githubusercontent.com/0-skar/3188/refs/heads/main/EL.png'); elSymbol.setAttribute('width', imageSize); elSymbol.setAttribute('height', imageSize); elSymbol.setAttribute('x', elX - (imageSize / 2)); elSymbol.setAttribute('y', elY - (imageSize/2)); elSymbol.setAttribute('filter', 'url(#fatten)'); elGroup.appendChild(elSymbol); svg.appendChild(elGroup);
+            const lSymbolX = elX; const lSymbolY = elY; const crossSpacingL = 13; const initialOffsetL = 18;
+            for (let i = 0; i < 3; i++) { const cross = document.createElementNS(svgNS, 'text'); cross.setAttribute('x', lSymbolX - initialOffsetL - (i * crossSpacingL)); cross.setAttribute('y', lSymbolY); cross.setAttribute('class', 'symbol-text'); cross.setAttribute('font-size', 12); cross.textContent = '✠'; svg.appendChild(cross); }
+            for (let i = 0; i < 4; i++) { const cross = document.createElementNS(svgNS, 'text'); cross.setAttribute('x', lSymbolX + initialOffsetL + (i * crossSpacingL)); cross.setAttribute('y', lSymbolY); cross.setAttribute('class', 'symbol-text'); cross.setAttribute('font-size', 12); cross.textContent = '✠'; svg.appendChild(cross); }
+
+            const heeoaBandIndex = 0;
+            const heeoaOuterMid = getPointOnLine(heptagramBands[heeoaBandIndex].outer.start, heptagramBands[heeoaBandIndex].outer.end, 0.5); const heeoaInnerMid = getPointOnLine(heptagramBands[heeoaBandIndex].inner.start, heptagramBands[heeoaBandIndex].inner.end, 0.5); const heeoaX = (heeoaOuterMid.x + heeoaInnerMid.x) / 2; const heeoaY = (heeoaOuterMid.y + heeoaInnerMid.y) / 2; const heeoaAngleRad = Math.atan2(heptagramBands[heeoaBandIndex].outer.end.y - heptagramBands[heeoaBandIndex].outer.start.y, heptagramBands[heeoaBandIndex].outer.end.x - heptagramBands[heeoaBandIndex].outer.start.x); const heeoaRotation = heeoaAngleRad * 180 / Math.PI;
+            const heeoaText = document.createElementNS(svgNS, 'text'); heeoaText.setAttribute('x', heeoaX); heeoaText.setAttribute('y', heeoaY); heeoaText.setAttribute('transform', `rotate(${heeoaRotation}, ${heeoaX}, ${heeoaY})`); heeoaText.setAttribute('class', 'symbol-text'); heeoaText.setAttribute('font-size', 20); heeoaText.setAttribute('font-weight', 'bold'); heeoaText.textContent = 'Heeoa'; svg.appendChild(heeoaText);
+            const abX = heeoaX - 28 * Math.sin(heeoaAngleRad); const abY = heeoaY + 28 * Math.cos(heeoaAngleRad); const abText = document.createElementNS(svgNS, 'text'); abText.setAttribute('x', abX); abText.setAttribute('y', abY); abText.setAttribute('transform', `rotate(${heeoaRotation}, ${abX}, ${abY})`); abText.setAttribute('class', 'symbol-text'); abText.setAttribute('font-size', 20); abText.setAttribute('font-weight', 'bold'); abText.textContent = 'Ab'; svg.appendChild(abText);
+            for (let i = 0; i < 3; i++) { const cx = abX - (25 + i * 15) * Math.cos(heeoaAngleRad); const cy = abY - (25 + i * 15) * Math.sin(heeoaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${heeoaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            for (let i = 0; i < 4; i++) { const cx = abX + (25 + i * 15) * Math.cos(heeoaAngleRad); const cy = abY + (25 + i * 15) * Math.sin(heeoaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${heeoaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            const anX = abX - 22 * Math.sin(heeoaAngleRad); const anY = abY + 22 * Math.cos(heeoaAngleRad); drawAlignedText(parseCode('An'), anX, anY, { fontSize: 20, rotation: heeoaRotation, fontWeight: 'bold', id: 'seal-text-an' });
+            for (let i = 0; i < 3; i++) { const cx = anX - (23 + i * 13) * Math.cos(heeoaAngleRad); const cy = anY - (23 + i * 13) * Math.sin(heeoaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${heeoaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            for (let i = 0; i < 4; i++) { const cx = anX + (23 + i * 13) * Math.cos(heeoaAngleRad); const cy = anY + (23 + i * 13) * Math.sin(heeoaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${heeoaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            const aX = anX - 22 * Math.sin(heeoaAngleRad); const aY = anY + 22 * Math.cos(heeoaAngleRad); const aText2 = document.createElementNS(svgNS, 'text'); aText2.setAttribute('x', aX); aText2.setAttribute('y', aY); aText2.setAttribute('transform', `rotate(${heeoaRotation}, ${aX}, ${aY})`); aText2.setAttribute('class', 'symbol-text'); aText2.setAttribute('font-size', 20); aText2.setAttribute('font-weight', 'bold'); aText2.textContent = 'A'; svg.appendChild(aText2);
+            createCrossOnBand(heptagramBands[0], 0.25, heeoaRotation, 0.5); createCrossOnBand(heptagramBands[0], 0.85, heeoaRotation, 0.5);
+
+            const ihBandIndex = 1; const ihAngleRad = Math.atan2(heptagramBands[1].outer.end.y - heptagramBands[1].outer.start.y, heptagramBands[1].outer.end.x - heptagramBands[1].outer.start.x); const ihRotation = ihAngleRad * 180 / Math.PI;
+            const ihOuterMid = getPointOnLine(heptagramBands[1].outer.start, heptagramBands[1].outer.end, 0.5); const ihInnerMid = getPointOnLine(heptagramBands[1].inner.start, heptagramBands[1].inner.end, 0.5); const ihX = (ihOuterMid.x + ihInnerMid.x)/2; const ihY = (ihOuterMid.y + ihInnerMid.y)/2;
+            const ihTextNode = document.createElementNS(svgNS, 'text'); ihTextNode.setAttribute('x', ihX); ihTextNode.setAttribute('y', ihY); ihTextNode.setAttribute('transform', `rotate(${ihRotation}, ${ihX}, ${ihY})`); ihTextNode.setAttribute('class', 'symbol-text'); ihTextNode.setAttribute('font-size', 20); ihTextNode.setAttribute('font-weight', 'bold'); ihTextNode.textContent = 'Ih'; svg.appendChild(ihTextNode);
+            const ihCrossX = ihX + 50 * Math.cos(ihAngleRad); const ihCrossY = ihY + 50 * Math.sin(ihAngleRad); const ihCross = document.createElementNS(svgNS, 'text'); ihCross.setAttribute('x', ihCrossX); ihCross.setAttribute('y', ihCrossY); ihCross.setAttribute('transform', `rotate(${ihRotation}, ${ihCrossX}, ${ihCrossY})`); ihCross.setAttribute('class', 'symbol-text'); ihCross.setAttribute('font-size', 24); ihCross.textContent = '✠'; svg.appendChild(ihCross);
+            createCrossOnBand(heptagramBands[1], 0.40, ihRotation, 0.5); createCrossOnBand(heptagramBands[1], 0.25, ihRotation, 0.5); createCrossOnBand(heptagramBands[1], 0.10, ihRotation, 0.5);
+            const atbX = ihX - 28 * Math.sin(ihAngleRad); const atbY = ihY + 28 * Math.cos(ihAngleRad); const atbText = document.createElementNS(svgNS, 'text'); atbText.setAttribute('x', atbX); atbText.setAttribute('y', atbY); atbText.setAttribute('transform', `rotate(${ihRotation}, ${atbX}, ${atbY})`); atbText.setAttribute('class', 'symbol-text'); atbText.setAttribute('font-size', 20); atbText.setAttribute('font-weight', 'bold'); atbText.textContent = 'Atb'; svg.appendChild(atbText);
+            for(let i=0; i<3; i++) { const cx = atbX - (30 + i*15)*Math.cos(ihAngleRad); const cy = atbY - (30 + i*15)*Math.sin(ihAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ihRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            for(let i=0; i<4; i++) { const cx = atbX + (30 + i*15)*Math.cos(ihAngleRad); const cy = atbY + (30 + i*15)*Math.sin(ihAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ihRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            const aveX = atbX - 22 * Math.sin(ihAngleRad); const aveY = atbY + 22 * Math.cos(ihAngleRad); drawAlignedText(parseCode('Ave'), aveX, aveY, { fontSize: 20, rotation: ihRotation, fontWeight: 'bold', id: 'seal-text-ave' });
+            for(let i=0; i<3; i++) { const cx = aveX - (28 + i*13)*Math.cos(ihAngleRad); const cy = aveY - (28 + i*13)*Math.sin(ihAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ihRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            for(let i=0; i<4; i++) { const cx = aveX + (28 + i*13)*Math.cos(ihAngleRad); const cy = aveY + (28 + i*13)*Math.sin(ihAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ihRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            const bX = aveX - 22 * Math.sin(ihAngleRad); const bY = aveY + 22 * Math.cos(ihAngleRad); const bText = document.createElementNS(svgNS, 'text'); bText.setAttribute('x', bX); bText.setAttribute('y', bY); bText.setAttribute('transform', `rotate(${ihRotation}, ${bX}, ${bY})`); bText.setAttribute('class', 'symbol-text'); bText.setAttribute('font-size', 20); bText.setAttribute('font-weight', 'bold'); bText.textContent = 'B'; svg.appendChild(bText);
+            createCrossOnBand(heptagramBands[1], 0.80, ihRotation, 0.5); createCrossOnBand(heptagramBands[1], 0.85, ihRotation, 0.5); createCrossOnBand(heptagramBands[1], 0.90, ihRotation, 0.5);
+
+            const beigiaAngleRad = Math.atan2(heptagramBands[2].outer.end.y - heptagramBands[2].outer.start.y, heptagramBands[2].outer.end.x - heptagramBands[2].outer.start.x); const beigiaRotation = beigiaAngleRad * 180 / Math.PI;
+            const beigiaOuterMid = getPointOnLine(heptagramBands[2].outer.start, heptagramBands[2].outer.end, 0.5); const beigiaInnerMid = getPointOnLine(heptagramBands[2].inner.start, heptagramBands[2].inner.end, 0.5); const beigiaX = (beigiaOuterMid.x + beigiaInnerMid.x)/2; const beigiaY = (beigiaOuterMid.y + beigiaInnerMid.y)/2;
+            const beigiaText = document.createElementNS(svgNS, 'text'); beigiaText.setAttribute('x', beigiaX); beigiaText.setAttribute('y', beigiaY); beigiaText.setAttribute('transform', `rotate(${beigiaRotation}, ${beigiaX}, ${beigiaY})`); beigiaText.setAttribute('class', 'symbol-text'); beigiaText.setAttribute('font-size', 20); beigiaText.setAttribute('font-weight', 'bold'); beigiaText.textContent = 'Beigia'; svg.appendChild(beigiaText);
+            const izedX = beigiaX - 28 * Math.sin(beigiaAngleRad); const izedY = beigiaY + 28 * Math.cos(beigiaAngleRad); const izedText = document.createElementNS(svgNS, 'text'); izedText.setAttribute('x', izedX); izedText.setAttribute('y', izedY); izedText.setAttribute('transform', `rotate(${beigiaRotation}, ${izedX}, ${izedY})`); izedText.setAttribute('class', 'symbol-text'); izedText.setAttribute('font-size', 20); izedText.setAttribute('font-weight', 'bold'); izedText.textContent = 'Ized'; svg.appendChild(izedText);
+            for(let i=0; i<3; i++) { const cx = izedX - (30 + i*15)*Math.cos(beigiaAngleRad); const cy = izedY - (30 + i*15)*Math.sin(beigiaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${beigiaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            for(let i=0; i<4; i++) { const cx = izedX + (25 + i*15)*Math.cos(beigiaAngleRad); const cy = izedY + (25 + i*15)*Math.sin(beigiaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${beigiaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            const libaX = izedX - 22 * Math.sin(beigiaAngleRad); const libaY = izedY + 22 * Math.cos(beigiaAngleRad); drawAlignedText(parseCode('Liba'), libaX, libaY, { fontSize: 20, rotation: beigiaRotation, fontWeight: 'bold', id: 'seal-text-liba' });
+            for(let i=0; i<3; i++) { const cx = libaX - (28 + i*11)*Math.cos(beigiaAngleRad); const cy = libaY - (28 + i*11)*Math.sin(beigiaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${beigiaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            for(let i=0; i<4; i++) { const cx = libaX + (25 + i*11)*Math.cos(beigiaAngleRad); const cy = libaY + (25 + i*11)*Math.sin(beigiaAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${beigiaRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            const aLibaX = libaX - 22 * Math.sin(beigiaAngleRad); const aLibaY = libaY + 22 * Math.cos(beigiaAngleRad); const aLibaText = document.createElementNS(svgNS, 'text'); aLibaText.setAttribute('x', aLibaX); aLibaText.setAttribute('y', aLibaY); aLibaText.setAttribute('transform', `rotate(${beigiaRotation}, ${aLibaX}, ${aLibaY})`); aLibaText.setAttribute('class', 'symbol-text'); aLibaText.setAttribute('font-size', 20); aLibaText.setAttribute('font-weight', 'bold'); aLibaText.textContent = 'A'; svg.appendChild(aLibaText);
+            createCrossOnBand(heptagramBands[2], 0.15, beigiaRotation, 0.5); createCrossOnBand(heptagramBands[2], 0.85, beigiaRotation, 0.5);
+
+            const ilrAngleRad = Math.atan2(heptagramBands[3].outer.end.y - heptagramBands[3].outer.start.y, heptagramBands[3].outer.end.x - heptagramBands[3].outer.start.x); const ilrRotation = ilrAngleRad * 180 / Math.PI;
+            const ilrOuterMid = getPointOnLine(heptagramBands[3].outer.start, heptagramBands[3].outer.end, 0.5); const ilrInnerMid = getPointOnLine(heptagramBands[3].inner.start, heptagramBands[3].inner.end, 0.5); const ilrX = (ilrOuterMid.x + ilrInnerMid.x)/2; const ilrY = (ilrOuterMid.y + ilrInnerMid.y)/2;
+            const ilrText = document.createElementNS(svgNS, 'text'); ilrText.setAttribute('x', ilrX); ilrText.setAttribute('y', ilrY); ilrText.setAttribute('transform', `rotate(${ilrRotation}, ${ilrX}, ${ilrY})`); ilrText.setAttribute('class', 'symbol-text'); ilrText.setAttribute('font-size', 20); ilrText.setAttribute('font-weight', 'bold'); ilrText.textContent = 'Ilr'; svg.appendChild(ilrText);
+            const ilrCrossX = ilrX + 50 * Math.cos(ilrAngleRad); const ilrCrossY = ilrY + 50 * Math.sin(ilrAngleRad); const ilrCross = document.createElementNS(svgNS, 'text'); ilrCross.setAttribute('x', ilrCrossX); ilrCross.setAttribute('y', ilrCrossY); ilrCross.setAttribute('transform', `rotate(${ilrRotation}, ${ilrCrossX}, ${ilrCrossY})`); ilrCross.setAttribute('class', 'symbol-text'); ilrCross.setAttribute('font-size', 24); ilrCross.textContent = '✠'; svg.appendChild(ilrCross);
+            createCrossOnBand(heptagramBands[3], 0.35, ilrRotation, 0.5); createCrossOnBand(heptagramBands[3], 0.25, ilrRotation, 0.5); createCrossOnBand(heptagramBands[3], 0.15, ilrRotation, 0.5);
+            createCrossOnBand(heptagramBands[3], 0.92, ilrRotation, 0.5); createCrossOnBand(heptagramBands[3], 0.86, ilrRotation, 0.5); createCrossOnBand(heptagramBands[3], 0.80, ilrRotation, 0.5);
+            const ekieiX = ilrX - 28 * Math.sin(ilrAngleRad); const ekieiY = ilrY + 28 * Math.cos(ilrAngleRad); const ekieiText = document.createElementNS(svgNS, 'text'); ekieiText.setAttribute('x', ekieiX); ekieiText.setAttribute('y', ekieiY); ekieiText.setAttribute('transform', `rotate(${ilrRotation}, ${ekieiX}, ${ekieiY})`); ekieiText.setAttribute('class', 'symbol-text'); ekieiText.setAttribute('font-size', 20); ekieiText.setAttribute('font-weight', 'bold'); ekieiText.textContent = 'Ekiei'; svg.appendChild(ekieiText);
+            for(let i=0; i<3; i++) { const cx = ekieiX - (35 + i*15)*Math.cos(ilrAngleRad); const cy = ekieiY - (35 + i*15)*Math.sin(ilrAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ilrRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            for(let i=0; i<4; i++) { const cx = ekieiX + (35 + i*15)*Math.cos(ilrAngleRad); const cy = ekieiY + (35 + i*15)*Math.sin(ilrAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ilrRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 16); c.textContent = '✠'; svg.appendChild(c); }
+            const rocleX = ekieiX - 22 * Math.sin(ilrAngleRad); const rocleY = ekieiY + 22 * Math.cos(ilrAngleRad); drawAlignedText(parseCode('Rocle'), rocleX, rocleY, { fontSize: 20, rotation: ilrRotation, fontWeight: 'bold', id: 'seal-text-rocle' });
+            for(let i=0; i<3; i++) { const cx = rocleX - (33 + i*11)*Math.cos(ilrAngleRad); const cy = rocleY - (33 + i*11)*Math.sin(ilrAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ilrRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            for(let i=0; i<4; i++) { const cx = rocleX + (36 + i*11)*Math.cos(ilrAngleRad); const cy = rocleY + (36 + i*11)*Math.sin(ilrAngleRad); const c = document.createElementNS(svgNS, 'text'); c.setAttribute('x', cx); c.setAttribute('y', cy); c.setAttribute('transform', `rotate(${ilrRotation}, ${cx}, ${cy})`); c.setAttribute('class', 'symbol-text'); c.setAttribute('font-size', 12); c.textContent = '✠'; svg.appendChild(c); }
+            const tX = rocleX - 22 * Math.sin(ilrAngleRad); const tY = rocleY + 22 * Math.cos(ilrAngleRad); const tText = document.createElementNS(svgNS, 'text'); tText.setAttribute('x', tX); tText.setAttribute('y', tY); tText.setAttribute('transform', `rotate(${ilrRotation}, ${tX}, ${tY})`); tText.setAttribute('class', 'symbol-text'); tText.setAttribute('font-size', 20); tText.setAttribute('font-weight', 'bold'); tText.textContent = 'T'; svg.appendChild(tText);
+
+            const stimculAngleRad = Math.atan2(heptagramBands[4].outer.end.y - heptagramBands[4].outer.start.y, heptagramBands[4].outer.end.x - heptagramBands[4].outer.start.x); const stimculRotation = stimculAngleRad * 180 / Math.PI;
+            const stimculOuterMid = getPointOnLine(heptagramBands[4].outer.start, heptagramBands[4].outer.end, 0.5); const stimculInnerMid = getPointOnLine(heptagramBands[4].inner.start, heptagramBands[4].inner.end, 0.5); const stimculX = (stimculOuterMid.x + stimculInnerMid.x)/2; const stimculY = (stimculOuterMid.y + stimculInnerMid.y)/2;
+            const stimculTextNode = document.createElementNS(svgNS, 'text'); stimculTextNode.setAttribute('x', stimculX); stimculTextNode.setAttribute('y', stimculY); stimculTextNode.setAttribute('transform', `rotate(${stimculRotation}, ${stimculX}, ${stimculY})`); stimculTextNode.setAttribute('class', 'symbol-text'); stimculTextNode.setAttribute('font-size', 20); stimculTextNode.setAttribute('font-weight', 'bold'); stimculTextNode.textContent = 'Stimcul'; svg.appendChild(stimculTextNode);
+            const madimiX = stimculX - 28 * Math.sin(stimculAngleRad); const madimiY = stimculY + 28 * Math.cos(stimculAngleRad); const madimiText = document.createElementNS(svgNS, 'text'); madimiText.setAttribute('x', madimiX); madimiText.setAttribute('y', madimiY); madimiText.setAttribute('transform', `rotate(${stimculRotation}, ${madimiX}, ${madimiY})`); madimiText.setAttribute('class', 'symbol-text'); madimiText.setAttribute('font-size', 20); madimiText.setAttribute('font-weight', 'bold'); madimiText.textContent = 'Madimi'; svg.appendChild(madimiText);
+            const crossXML = madimiX - 70 * Math.cos(stimculAngleRad); const crossYML = madimiY - 70 * Math.sin(stimculAngleRad); const crossML = document.createElementNS(svgNS, 'text'); crossML.setAttribute('x', crossXML); crossML.setAttribute('y', crossYML); crossML.setAttribute('transform', `rotate(${stimculRotation}, ${crossXML}, ${crossYML})`); crossML.setAttribute('class', 'symbol-text'); crossML.setAttribute('font-size', 16); crossML.textContent = '✠'; svg.appendChild(crossML);
+            const crossXIR = madimiX + 70 * Math.cos(stimculAngleRad); const crossYIR = madimiY + 70 * Math.sin(stimculAngleRad); const crossIR = document.createElementNS(svgNS, 'text'); crossIR.setAttribute('x', crossXIR); crossIR.setAttribute('y', crossYIR); crossIR.setAttribute('transform', `rotate(${stimculRotation}, ${crossXIR}, ${crossYIR})`); crossIR.setAttribute('class', 'symbol-text'); crossIR.setAttribute('font-size', 16); crossIR.textContent = '✠'; svg.appendChild(crossIR);
+            const hagonelX = madimiX - 22 * Math.sin(stimculAngleRad); const hagonelY = madimiY + 22 * Math.cos(stimculAngleRad);
+            const hagonelGroup = document.createElementNS(svgNS, 'g'); hagonelGroup.id = 'seal-text-hagonel'; hagonelGroup.setAttribute('transform', `rotate(${stimculRotation}, ${hagonelX}, ${hagonelY})`); const hBg = document.createElementNS(svgNS, 'rect'); hBg.setAttribute('x', hagonelX - 35); hBg.setAttribute('y', hagonelY - 12); hBg.setAttribute('width', 70); hBg.setAttribute('height', 24); hBg.setAttribute('class', 'seal-highlight-bg'); hagonelGroup.appendChild(hBg); const hText = document.createElementNS(svgNS, 'text'); hText.setAttribute('x', hagonelX); hText.setAttribute('y', hagonelY); hText.setAttribute('class', 'symbol-text'); hText.setAttribute('font-size', 20); hText.setAttribute('font-weight', 'bold'); const ts1 = document.createElementNS(svgNS, 'tspan'); ts1.textContent = 'Hagon'; const ts2 = document.createElementNS(svgNS, 'tspan'); ts2.textContent = '&'; hText.appendChild(ts1); hText.appendChild(ts2); hagonelGroup.appendChild(hText); svg.appendChild(hagonelGroup);
+            const crossXHL = hagonelX - 60 * Math.cos(stimculAngleRad); const crossYHL = hagonelY - 60 * Math.sin(stimculAngleRad); const crossHL = document.createElementNS(svgNS, 'text'); crossHL.setAttribute('x', crossXHL); crossHL.setAttribute('y', crossYHL); crossHL.setAttribute('transform', `rotate(${stimculRotation}, ${crossXHL}, ${crossYHL})`); crossHL.setAttribute('class', 'symbol-text'); crossHL.setAttribute('font-size', 12); crossHL.textContent = '✠'; svg.appendChild(crossHL);
+            const crossXAR = hagonelX + 60 * Math.cos(stimculAngleRad); const crossYAR = hagonelY + 60 * Math.sin(stimculAngleRad); const crossAR = document.createElementNS(svgNS, 'text'); crossAR.setAttribute('x', crossXAR); crossAR.setAttribute('y', crossYAR); crossAR.setAttribute('transform', `rotate(${stimculRotation}, ${crossXAR}, ${crossYAR})`); crossAR.setAttribute('class', 'symbol-text'); crossAR.setAttribute('font-size', 12); crossAR.textContent = '✠'; svg.appendChild(crossAR);
+            const hX = hagonelX - 22 * Math.sin(stimculAngleRad); const hY = hagonelY + 22 * Math.cos(stimculAngleRad); const hText2 = document.createElementNS(svgNS, 'text'); hText2.setAttribute('x', hX); hText2.setAttribute('y', hY); hText2.setAttribute('transform', `rotate(${stimculRotation}, ${hX}, ${hY})`); hText2.setAttribute('class', 'symbol-text'); hText2.setAttribute('font-size', 20); hText2.setAttribute('font-weight', 'bold'); hText2.textContent = 'H'; svg.appendChild(hText2);
+            createCrossOnBand(heptagramBands[4], 0.10, stimculRotation, 0.6); createCrossOnBand(heptagramBands[4], 0.90, stimculRotation, 0.6);
+
+            const dmalAngleRad = Math.atan2(heptagramBands[5].outer.end.y - heptagramBands[5].outer.start.y, heptagramBands[5].outer.end.x - heptagramBands[5].outer.start.x); const dmalRotation = dmalAngleRad * 180 / Math.PI;
+            const dmalOuterMid = getPointOnLine(heptagramBands[5].outer.start, heptagramBands[5].outer.end, 0.5); const dmalInnerMid = getPointOnLine(heptagramBands[5].inner.start, heptagramBands[5].inner.end, 0.5); const dmalX = (dmalOuterMid.x + dmalInnerMid.x)/2; const dmalY = (dmalOuterMid.y + dmalInnerMid.y)/2;
+            const dmalText = document.createElementNS(svgNS, 'text'); dmalText.setAttribute('x', dmalX); dmalText.setAttribute('y', dmalY); dmalText.setAttribute('transform', `rotate(${dmalRotation}, ${dmalX}, ${dmalY})`); dmalText.setAttribute('class', 'symbol-text'); dmalText.setAttribute('font-size', 20); dmalText.setAttribute('font-weight', 'bold'); dmalText.textContent = 'Dmal'; svg.appendChild(dmalText);
+            const esemeliX = dmalX - 28 * Math.sin(dmalAngleRad); const esemeliY = dmalY + 28 * Math.cos(dmalAngleRad); const esemeliText = document.createElementNS(svgNS, 'text'); esemeliText.setAttribute('x', esemeliX); esemeliText.setAttribute('y', esemeliY); esemeliText.setAttribute('transform', `rotate(${dmalRotation}, ${esemeliX}, ${esemeliY})`); esemeliText.setAttribute('class', 'symbol-text'); esemeliText.setAttribute('font-size', 20); esemeliText.setAttribute('font-weight', 'bold'); esemeliText.textContent = 'Esemeli'; svg.appendChild(esemeliText);
+            const crossXEL = esemeliX - 70 * Math.cos(dmalAngleRad); const crossYEL = esemeliY - 70 * Math.sin(dmalAngleRad); const crossEL = document.createElementNS(svgNS, 'text'); crossEL.setAttribute('x', crossXEL); crossEL.setAttribute('y', crossYEL); crossEL.setAttribute('transform', `rotate(${dmalRotation}, ${crossXEL}, ${crossYEL})`); crossEL.setAttribute('class', 'symbol-text'); crossEL.setAttribute('font-size', 16); crossEL.textContent = '✠'; svg.appendChild(crossEL);
+            const crossXIER = esemeliX + 70 * Math.cos(dmalAngleRad); const crossYIER = esemeliY + 70 * Math.sin(dmalAngleRad); const crossIER = document.createElementNS(svgNS, 'text'); crossIER.setAttribute('x', crossXIER); crossIER.setAttribute('y', crossYIER); crossIER.setAttribute('transform', `rotate(${dmalRotation}, ${crossXIER}, ${crossYIER})`); crossIER.setAttribute('class', 'symbol-text'); crossIER.setAttribute('font-size', 16); crossIER.textContent = '✠'; svg.appendChild(crossIER);
+            const ilemeseX = esemeliX - 22 * Math.sin(dmalAngleRad); const ilemeseY = esemeliY + 22 * Math.cos(dmalAngleRad); drawAlignedText(parseCode('Ilemese'), ilemeseX, ilemeseY, { fontSize: 20, rotation: dmalRotation, fontWeight: 'bold', id: 'seal-text-ilemese' });
+            const crossXIL = ilemeseX - 68 * Math.cos(dmalAngleRad); const crossYIL = ilemeseY - 68 * Math.sin(dmalAngleRad); const crossIL = document.createElementNS(svgNS, 'text'); crossIL.setAttribute('x', crossXIL); crossIL.setAttribute('y', crossYIL); crossIL.setAttribute('transform', `rotate(${dmalRotation}, ${crossXIL}, ${crossYIL})`); crossIL.setAttribute('class', 'symbol-text'); crossIL.setAttribute('font-size', 12); crossIL.textContent = '✠'; svg.appendChild(crossIL);
+            const crossXEIR = ilemeseX + 68 * Math.cos(dmalAngleRad); const crossYEIR = ilemeseY + 68 * Math.sin(dmalAngleRad); const crossEIR = document.createElementNS(svgNS, 'text'); crossEIR.setAttribute('x', crossXEIR); crossEIR.setAttribute('y', crossYEIR); crossEIR.setAttribute('transform', `rotate(${dmalRotation}, ${crossXEIR}, ${crossYEIR})`); crossEIR.setAttribute('class', 'symbol-text'); crossEIR.setAttribute('font-size', 12); crossEIR.textContent = '✠'; svg.appendChild(crossEIR);
+            const ilemeseSubCode = [ { char: 'I' }, { sup: '21', sub: '8', dot_below: true } ]; const ilemeseSubX = ilemeseX - 28 * Math.sin(dmalAngleRad); const ilemeseSubY = ilemeseY + 28 * Math.cos(dmalAngleRad); drawAlignedText(ilemeseSubCode, ilemeseSubX, ilemeseSubY, { fontSize: 16, rotation: dmalRotation, fontWeight: 'bold' });
+            createCrossOnBand(heptagramBands[5], 0.15, dmalRotation, 0.6); createCrossOnBand(heptagramBands[5], 0.90, dmalRotation, 0.6);
+
+            const topBandAngleRad = Math.atan2(heptagramBands[6].outer.end.y - heptagramBands[6].outer.start.y, heptagramBands[6].outer.end.x - heptagramBands[6].outer.start.x); const topBandRotation = topBandAngleRad * 180 / Math.PI;
+            createCrossOnBand(heptagramBands[6], 0.10, topBandRotation, 0.6); createCrossOnBand(heptagramBands[6], 0.25, topBandRotation, 0.6); createCrossOnBand(heptagramBands[6], 0.40, topBandRotation, 0.6); createCrossOnBand(heptagramBands[6], 0.60, topBandRotation, 0.6);
+            createCrossOnBand(heptagramBands[6], 0.76, topBandRotation, 0.6); createCrossOnBand(heptagramBands[6], 0.84, topBandRotation, 0.6); createCrossOnBand(heptagramBands[6], 0.92, topBandRotation, 0.6);
+
+            const radiusInnerBoundary = rSInner * (Math.cos(2 * Math.PI / 7) / Math.cos(Math.PI / 7)); const finalSpacing = 25; const radiusCenterHeptagonOuter = radiusInnerBoundary - finalSpacing; const radiusCenterHeptagonInner = radiusCenterHeptagonOuter - finalSpacing; const centerHeptagonAngleOffset = angleOffset + Math.PI / 7; const centerHeptagonOuterVertices = getVertices(7, radiusCenterHeptagonOuter, centerHeptagonAngleOffset); const centerHeptagonInnerVertices = getVertices(7, radiusCenterHeptagonInner, centerHeptagonAngleOffset); for (let i = 0; i < 7; i++) { drawLine(centerHeptagonOuterVertices[i], centerHeptagonOuterVertices[(i + 1) % 7]); drawLine(centerHeptagonInnerVertices[i], centerHeptagonInnerVertices[(i + 1) % 7]); }
+            const radiusPentagramOuter = radiusCenterHeptagonInner * Math.cos(Math.PI / 7); const pentagramThickness = 20; const radiusPentagramInner = radiusPentagramOuter - pentagramThickness; const pOV = getVertices(5, radiusPentagramOuter, angleOffset); const pIV = getVertices(5, radiusPentagramInner, angleOffset); const pentagramBands = []; for (let i = 0; i < 5; i++) { pentagramBands.push({ index: i, outer: { start: pOV[i], end: pOV[(i + 2) % 5] }, inner: { start: pIV[i], end: pIV[(i + 2) % 5] } }); }
+            const pentagramIntersections = []; for (let i = 0; i < 5; i++) { for (let j = i + 1; j < 5; j++) { const p = lineIntersection(pentagramBands[i].outer.start, pentagramBands[i].outer.end, pentagramBands[j].outer.start, pentagramBands[j].outer.end); if (p) { pentagramIntersections.push({ bands: [i, j] }); } } }
+            pentagramBands.forEach(band => { [band.outer, band.inner].forEach(line => { const breakIntervals = []; pentagramIntersections.forEach(inter => { if (!inter.bands.includes(band.index)) return; const otherBandIndex = inter.bands.find(idx => idx !== band.index); const isVerticalBreak = (band.index + otherBandIndex) % 2 === 0; const p1 = lineIntersection(line.start, line.end, pentagramBands[otherBandIndex].outer.start, pentagramBands[otherBandIndex].outer.end); const p2 = lineIntersection(line.start, line.end, pentagramBands[otherBandIndex].inner.start, pentagramBands[otherBandIndex].inner.end); if (p1 && p2) { if (isVerticalBreak && (band.index > otherBandIndex)) { breakIntervals.push({ start: Math.min(p1.dist, p2.dist), end: Math.max(p1.dist, p2.dist) }); } if (!isVerticalBreak && (band.index < otherBandIndex)) { breakIntervals.push({ start: Math.min(p1.dist, p2.dist), end: Math.max(p1.dist, p2.dist) }); } } }); breakIntervals.sort((a,b) => a.start - b.start); let lastPoint = line.start; const lineLength = Math.hypot(line.end.x - line.start.x, line.end.y - line.start.y); breakIntervals.forEach(interval => { const breakStartPoint = getPointOnLine(line.start, line.end, interval.start / lineLength); drawLine(lastPoint, breakStartPoint); lastPoint = getPointOnLine(line.start, line.end, interval.end / lineLength); }); drawLine(lastPoint, line.end); }); });
+
+            const rCrossHeptagramInner = rSInner - 22;
+            for (let i = 0; i < 7; i++) { if (i === 3) continue; const angleRad = angleOffset + i * (2 * Math.PI / 7); const angleDeg = angleRad * 180 / Math.PI; const x = centerX + rCrossHeptagramInner * Math.cos(angleRad); const y = centerY + rCrossHeptagramInner * Math.sin(angleRad); const textEl = document.createElementNS(svgNS, 'text'); textEl.setAttribute('x', x); textEl.setAttribute('y', y); textEl.setAttribute('transform', `rotate(${angleDeg + 90}, ${x}, ${y})`); textEl.setAttribute('class', 'symbol-text'); textEl.setAttribute('font-size', 24); textEl.textContent = '✠'; svg.appendChild(textEl); }
+            const topCrossAngleRad = angleOffset; const topCrossX = centerX + rCrossHeptagramInner * Math.cos(topCrossAngleRad); const topCrossY = centerY + rCrossHeptagramInner * Math.sin(topCrossAngleRad); const elText2 = document.createElementNS(svgNS, 'text'); elText2.setAttribute('x', topCrossX); elText2.setAttribute('y', topCrossY + 34); elText2.setAttribute('class', 'symbol-text'); elText2.setAttribute('font-size', 20); elText2.setAttribute('font-weight', 'bold'); elText2.textContent = 'El'; svg.appendChild(elText2);
+            const textRadius = rCrossHeptagramInner - 34;
+            const meIndex = 1; const meAngleRad = angleOffset + meIndex * (2 * Math.PI / 7); const meTextX = centerX + textRadius * Math.cos(meAngleRad); const meTextY = centerY + textRadius * Math.sin(meAngleRad); const meText = document.createElementNS(svgNS, 'text'); meText.setAttribute('x', meTextX); meText.setAttribute('y', meTextY); meText.setAttribute('transform', `rotate(${(meAngleRad * 180 / Math.PI) + 90}, ${meTextX}, ${meTextY})`); meText.setAttribute('class', 'symbol-text'); meText.setAttribute('font-size', 20); meText.setAttribute('font-weight', 'bold'); meText.textContent = 'Me'; svg.appendChild(meText);
+            const eseIndex = 2; const eseAngleRad = angleOffset + eseIndex * (2 * Math.PI / 7); const eseTextX = centerX + textRadius * Math.cos(eseAngleRad); const eseTextY = centerY + textRadius * Math.sin(eseAngleRad); const eseText = document.createElementNS(svgNS, 'text'); eseText.setAttribute('x', eseTextX); eseText.setAttribute('y', eseTextY); eseText.setAttribute('transform', `rotate(${(eseAngleRad * 180 / Math.PI) + 90}, ${eseTextX}, ${eseTextY})`); eseText.setAttribute('class', 'symbol-text'); eseText.setAttribute('font-size', 20); eseText.setAttribute('font-weight', 'bold'); eseText.textContent = 'Ese'; svg.appendChild(eseText);
+            const ianaIndex = 3; const ianaAngleRad = angleOffset + ianaIndex * (2 * Math.PI / 7); const ianaCrossRadius = rSInner - 30; const ianaCrossX = centerX + ianaCrossRadius * Math.cos(ianaAngleRad); const ianaCrossY = centerY + ianaCrossRadius * Math.sin(ianaAngleRad); const ianaCross = document.createElementNS(svgNS, 'text'); ianaCross.setAttribute('x', ianaCrossX); ianaCross.setAttribute('y', ianaCrossY); ianaCross.setAttribute('transform', `rotate(${(ianaAngleRad * 180 / Math.PI) + 90}, ${ianaCrossX}, ${ianaCrossY})`); ianaCross.setAttribute('class', 'symbol-text'); ianaCross.setAttribute('font-size', 24); ianaCross.textContent = '✠'; svg.appendChild(ianaCross); const ianaTextX = centerX + textRadius * Math.cos(ianaAngleRad); const ianaTextY = centerY + textRadius * Math.sin(ianaAngleRad); const ianaText = document.createElementNS(svgNS, 'text'); ianaText.setAttribute('x', ianaTextX); ianaText.setAttribute('y', ianaTextY); ianaText.setAttribute('transform', `rotate(${(ianaAngleRad * 180 / Math.PI) + 90}, ${ianaTextX}, ${ianaTextY})`); ianaText.setAttribute('class', 'symbol-text'); ianaText.setAttribute('font-size', 20); ianaText.setAttribute('font-weight', 'bold'); ianaText.textContent = 'Iana'; svg.appendChild(ianaText);
+            const akeleIndex = 4; const akeleAngleRad = angleOffset + akeleIndex * (2 * Math.PI / 7); const akeleTextX = centerX + textRadius * Math.cos(akeleAngleRad); const akeleTextY = centerY + textRadius * Math.sin(akeleAngleRad); const akeleText = document.createElementNS(svgNS, 'text'); akeleText.setAttribute('x', akeleTextX); akeleText.setAttribute('y', akeleTextY); akeleText.setAttribute('transform', `rotate(${(akeleAngleRad * 180 / Math.PI) + 90}, ${akeleTextX}, ${akeleTextY})`); akeleText.setAttribute('class', 'symbol-text'); akeleText.setAttribute('font-size', 20); akeleText.setAttribute('font-weight', 'bold'); akeleText.textContent = 'Akele'; svg.appendChild(akeleText);
+            const azdobnIndex = 5; const azdobnAngleRad = angleOffset + azdobnIndex * (2 * Math.PI / 7); const azdobnTextX = centerX + textRadius * Math.cos(azdobnAngleRad); const azdobnTextY = centerY + textRadius * Math.sin(azdobnAngleRad); const azdobnText = document.createElementNS(svgNS, 'text'); azdobnText.setAttribute('x', azdobnTextX); azdobnText.setAttribute('y', azdobnTextY); azdobnText.setAttribute('transform', `rotate(${(azdobnAngleRad * 180 / Math.PI) + 90}, ${azdobnTextX}, ${azdobnTextY})`); azdobnText.setAttribute('class', 'symbol-text'); azdobnText.setAttribute('font-size', 20); azdobnText.setAttribute('font-weight', 'bold'); azdobnText.textContent = 'Azdobn'; svg.appendChild(azdobnText);
+            const stimculIndex2 = 6; const stimculAngleRad2 = angleOffset + stimculIndex2 * (2 * Math.PI / 7); const stimculTextX2 = centerX + textRadius * Math.cos(stimculAngleRad2); const stimculTextY2 = centerY + textRadius * Math.sin(stimculAngleRad2); const stimculText2 = document.createElementNS(svgNS, 'text'); stimculText2.setAttribute('x', stimculTextX2); stimculText2.setAttribute('y', stimculTextY2); stimculText2.setAttribute('transform', `rotate(${(stimculAngleRad2 * 180 / Math.PI) + 90}, ${stimculTextX2}, ${stimculTextY2})`); stimculText2.setAttribute('class', 'symbol-text'); stimculText2.setAttribute('font-size', 20); stimculText2.setAttribute('font-weight', 'bold'); stimculText2.textContent = 'Stimcul'; svg.appendChild(stimculText2);
+
+            let radiusForOrabielCircle;
+            const topLeftBaseForCircle = lineIntersection(pOV[4], pOV[1], pOV[0], pOV[2]); const topRightBaseForCircle = lineIntersection(pOV[3], pOV[0], pOV[4], pOV[1]);
+            if (topLeftBaseForCircle && topRightBaseForCircle) { radiusForOrabielCircle = Math.hypot((pOV[0].x + topLeftBaseForCircle.x + topRightBaseForCircle.x)/3 - centerX, (pOV[0].y + topLeftBaseForCircle.y + topRightBaseForCircle.y)/3 + 5 - centerY); }
+            
+            const zText = document.createElementNS(svgNS, 'text'); zText.setAttribute('x', pOV[0].x - 20); zText.setAttribute('y', pOV[0].y + 15); zText.setAttribute('class', 'symbol-text'); zText.setAttribute('font-size', 20); zText.setAttribute('font-weight', 'bold'); zText.textContent = 'Z'; svg.appendChild(zText);
+            if(topLeftBaseForCircle && topRightBaseForCircle) { const czX = (pOV[0].x + topLeftBaseForCircle.x + topRightBaseForCircle.x)/3; const czY = (pOV[0].y + topLeftBaseForCircle.y + topRightBaseForCircle.y)/3; const iz = document.createElementNS(svgNS, 'text'); iz.setAttribute('x', czX); iz.setAttribute('y', czY); iz.setAttribute('class', 'symbol-text'); iz.setAttribute('font-size', 20); iz.setAttribute('font-weight', 'bold'); iz.textContent = 'Z'; svg.appendChild(iz); }
+            const base1ForM = lineIntersection(pOV[4], pOV[1], pOV[0], pOV[2]); const base2ForM = lineIntersection(pOV[0], pOV[2], pOV[1], pOV[3]);
+            if(base1ForM && base2ForM){ const cmX = (pOV[1].x + base1ForM.x + base2ForM.x)/3; const cmY = (pOV[1].y + base1ForM.y + base2ForM.y)/3; const rotM = Math.atan2(base2ForM.y - base1ForM.y, base2ForM.x - base1ForM.x) * 180 / Math.PI; const im = document.createElementNS(svgNS, 'text'); im.setAttribute('x', cmX); im.setAttribute('y', cmY); im.setAttribute('transform', `rotate(${rotM}, ${cmX}, ${cmY})`); im.setAttribute('class', 'symbol-text'); im.setAttribute('font-size', 20); im.setAttribute('font-weight', 'bold'); im.textContent = 'M'; svg.appendChild(im); }
+            const base1ForS = lineIntersection(pOV[1], pOV[3], pOV[2], pOV[4]); const base2ForS = lineIntersection(pOV[0], pOV[2], pOV[1], pOV[3]);
+            if(base1ForS && base2ForS && radiusForOrabielCircle){ const angS = Math.atan2(pOV[2].y - centerY, pOV[2].x - centerX); const csX = centerX + (radiusForOrabielCircle + 10) * Math.cos(angS); const csY = centerY + (radiusForOrabielCircle + 10) * Math.sin(angS); const rotS = Math.atan2(base2ForS.y - base1ForS.y, base2ForS.x - base1ForS.x) * 180 / Math.PI; const is = document.createElementNS(svgNS, 'text'); is.setAttribute('x', csX); is.setAttribute('y', csY); is.setAttribute('transform', `rotate(${rotS}, ${csX}, ${csY})`); is.setAttribute('class', 'symbol-text'); is.setAttribute('font-size', 20); is.setAttribute('font-weight', 'bold'); is.textContent = 'S'; svg.appendChild(is); }
+            const base1ForN = lineIntersection(pOV[2], pOV[4], pOV[3], pOV[0]); const base2ForN = lineIntersection(pOV[1], pOV[3], pOV[2], pOV[4]);
+            if(base1ForN && base2ForN && radiusForOrabielCircle){ const angN = Math.atan2(pOV[3].y - centerY, pOV[3].x - centerX); const cnX = centerX + (radiusForOrabielCircle + 10) * Math.cos(angN); const cnY = centerY + (radiusForOrabielCircle + 10) * Math.sin(angN); const rotN = Math.atan2(base2ForN.y - base1ForN.y, base2ForN.x - base1ForN.x) * 180 / Math.PI; const iN = document.createElementNS(svgNS, 'text'); iN.setAttribute('x', cnX); iN.setAttribute('y', cnY); iN.setAttribute('transform', `rotate(${rotN}, ${cnX}, ${cnY})`); iN.setAttribute('class', 'symbol-text'); iN.setAttribute('font-size', 20); iN.setAttribute('font-weight', 'bold'); iN.textContent = 'N'; svg.appendChild(iN); }
+            const base1ForC = lineIntersection(pOV[2], pOV[4], pOV[3], pOV[0]); const base2ForC = lineIntersection(pOV[3], pOV[0], pOV[4], pOV[1]);
+            if(base1ForC && base2ForC){ const ccX = (pOV[4].x + base1ForC.x + base2ForC.x)/3; const ccY = (pOV[4].y + base1ForC.y + base2ForC.y)/3; const rotC = Math.atan2(base2ForC.y - base1ForC.y, base2ForC.x - base1ForC.x) * 180 / Math.PI; const ic = document.createElementNS(svgNS, 'text'); ic.setAttribute('x', ccX); ic.setAttribute('y', ccY); ic.setAttribute('transform', `rotate(${rotC}, ${ccX}, ${ccY})`); ic.setAttribute('class', 'symbol-text'); ic.setAttribute('font-size', 20); ic.setAttribute('font-weight', 'bold'); ic.textContent = 'C'; svg.appendChild(ic); }
+
+            const centerCross = document.createElementNS(svgNS, 'text'); centerCross.setAttribute('x', centerX); centerCross.setAttribute('y', centerY); centerCross.setAttribute('class', 'symbol-text'); centerCross.setAttribute('font-size', 24); centerCross.textContent = '✠'; svg.appendChild(centerCross);
+            const va = document.createElementNS(svgNS, 'text'); va.setAttribute('x', centerX); va.setAttribute('y', centerY - 22); va.setAttribute('class', 'symbol-text'); va.setAttribute('font-size', 16); va.setAttribute('font-weight', 'bold'); va.textContent = 'Va'; svg.appendChild(va);
+            const le = document.createElementNS(svgNS, 'text'); le.setAttribute('x', centerX - 22); le.setAttribute('y', centerY); le.setAttribute('class', 'symbol-text'); le.setAttribute('font-size', 16); le.setAttribute('font-weight', 'bold'); le.textContent = 'Le'; svg.appendChild(le);
+            const na = document.createElementNS(svgNS, 'text'); na.setAttribute('x', centerX + 22); na.setAttribute('y', centerY); na.setAttribute('class', 'symbol-text'); na.setAttribute('font-size', 16); na.setAttribute('font-weight', 'bold'); na.textContent = 'Na'; svg.appendChild(na);
+            const south = document.createElementNS(svgNS, 'text'); south.setAttribute('x', centerX); south.setAttribute('y', centerY + 22); south.setAttribute('class', 'symbol-text'); south.setAttribute('font-size', 16); south.setAttribute('font-weight', 'bold'); south.textContent = '&'; svg.appendChild(south);
+
+            if (radiusForOrabielCircle) {
+                const textRadius = radiusForOrabielCircle + 8;
+                const createArcText = (id, text, angleStartMultiplier, angleEndMultiplier) => {
+                    const path = document.createElementNS(svgNS, 'path'); path.setAttribute('id', id);
+                    const start = angleOffset + angleStartMultiplier * (2 * Math.PI / 5); const end = angleOffset + angleEndMultiplier * (2 * Math.PI / 5);
+                    const d = `M ${centerX + textRadius * Math.cos(start)},${centerY + textRadius * Math.sin(start)} A ${textRadius},${textRadius} 0 0 1 ${centerX + textRadius * Math.cos(end)},${centerY + textRadius * Math.sin(end)}`;
+                    path.setAttribute('d', d); path.setAttribute('fill', 'none'); defs.appendChild(path);
+                    const txt = document.createElementNS(svgNS, 'text'); txt.setAttribute('class', 'symbol-text'); txt.setAttribute('font-size', '18'); txt.setAttribute('font-weight', 'bold');
+                    const tp = document.createElementNS(svgNS, 'textPath'); tp.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `#${id}`); tp.textContent = text; tp.setAttribute('startOffset', '50%'); tp.setAttribute('text-anchor', 'middle');
+                    txt.appendChild(tp); svg.appendChild(txt);
+                };
+                createArcText('orabielArcPath', 'orabiel', 4, 5);
+                createArcText('edekielArcPath', 'edekiel', 0, 1);
+                createArcText('adimielArcPath', 'adimiel', 1, 2);
+                createArcText('emelielArcPath', 'emeliel', 2, 3);
+                createArcText('ogahelArcPath', 'ogahel', 3, 4);
+            }
+        }
+        // --- END: NEW FUNCTION ---
+
+        function toggleEnochianFont() { isEnochianActive = !isEnochianActive; const toggleBtn = document.getElementById('toggle-font-btn'); toggleBtn.classList.toggle('active-enochian', isEnochianActive); const elementsToTranslate = document.querySelectorAll('[data-latin-char]'); elementsToTranslate.forEach(el => { const latinChar = el.dataset.latinChar; if (isEnochianActive) { const enochianChar = latinToEnochianMap[latinChar] || latinChar; if (el.classList.contains('bonorum-cell') && el.querySelector('span')) { const span = el.querySelector('span').outerHTML; el.innerHTML = span + enochianChar; } else { el.textContent = enochianChar; } el.classList.add('enochian-font'); } else { if (el.classList.contains('bonorum-cell') && el.querySelector('span')) { const span = el.querySelector('span').outerHTML; el.innerHTML = span + latinChar; } else { el.textContent = latinChar; } el.classList.remove('enochian-font'); } }); }
+        function findLoagaethCellsForEntity(entity) { if (!entity) return []; let targetCellsPool = []; if (entity.side === 'right') { const map = { 1: 6, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1, 7: 0 }; if (loagaethCellMatrix[map[entity.startPosOnWall]]) { targetCellsPool = [...loagaethCellMatrix[map[entity.startPosOnWall]]].reverse(); } } else { const map = { 1: 0, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1 }; if (loagaethCellMatrix[map[entity.startPosOnWall]]) { targetCellsPool = loagaethCellMatrix[map[entity.startPosOnWall]].slice(0, 6).reverse(); } } return targetCellsPool; }
+        function clearPlanetaryHighlights() { document.querySelectorAll('.diagram-text-bg[class*="planetary-"], .diagram-text[class*="planetary-"], .planetary-king-highlight, .planetary-prince-highlight, .planetary-minister-highlight').forEach(el => { el.classList.remove('planetary-king-highlight', 'planetary-prince-highlight', 'planetary-minister-highlight'); }); }
+        
+        function updateAllPlanetaryHighlights() {
+            clearPlanetaryHighlights();
+            document.getElementById('bonorum-symbol-sun')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-bobogel"]'));
+            document.getElementById('bonorum-symbol-moon')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-blumaza"]'));
+            document.getElementById('bonorum-symbol-mars')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-babalel"]'));
+            document.getElementById('bonorum-symbol-mercury')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-bnaspol"]'));
+            document.getElementById('bonorum-symbol-jupiter')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-bynepor"]'));
+            document.getElementById('bonorum-symbol-venus')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-baligon"]'));
+            document.getElementById('bonorum-symbol-saturn')?.classList.toggle('highlight', !!document.querySelector('.planetary-king-row.selected[data-king-id="king-bnapsen"]'));
+            
+            document.querySelectorAll('.planetary-king-row.selected').forEach(row => {
+                const { kingId, rowIndex } = row.dataset;
+                addPlanetaryHighlightsForRow(kingId, parseInt(rowIndex));
+            });
+            updateCornerHighlights();
+        }
+
+        function animateStep() {
+            if (!animationState.isPlaying || !animationState.kingId) return;
+            const kingRows = document.querySelectorAll(`#${animationState.kingId} .planetary-king-row`);
+            if (kingRows.length === 0) {
+                const button = document.querySelector(`.play-button[data-king-id="${animationState.kingId}"]`);
+                if(button) toggleAnimation(button);
+                return;
+            }
+            document.querySelectorAll('.planetary-king-row.selected').forEach(r => r.classList.remove('selected'));
+            const currentRow = kingRows[animationState.currentRowIndex];
+            if (currentRow) currentRow.classList.add('selected');
+            updateAllPlanetaryHighlights();
+            animationState.currentRowIndex = (animationState.currentRowIndex + 1) % kingRows.length;
+        }
+
+        function toggleAnimation(button) {
+            if (!button) return;
+            const kingIdToPlay = button.dataset.kingId;
+            const wasPlayingThis = animationState.isPlaying && animationState.kingId === kingIdToPlay;
+            if (animationState.isPlaying) {
+                clearInterval(animationState.timer);
+                const oldButton = document.querySelector(`.play-button[data-king-id="${animationState.kingId}"]`);
+                if (oldButton) oldButton.classList.remove('playing');
+                animationState.isPlaying = false;
+                animationState.kingId = null;
+            }
+            if (!wasPlayingThis) {
+                animationState.isPlaying = true;
+                animationState.kingId = kingIdToPlay;
+                animationState.currentRowIndex = 0;
+                button.classList.add('playing');
+                animateStep(); 
+                animationState.timer = setInterval(animateStep, 1500);
+            }
+        }
+        
+        function handlePlanetaryKingRowClick(event) {
+            const row = event.target.closest('.planetary-king-row');
+            if (!row) return;
+            if (animationState.isPlaying) {
+                const playingButton = document.querySelector(`.play-button[data-king-id="${animationState.kingId}"]`);
+                if (playingButton) toggleAnimation(playingButton); 
+            }
+            row.classList.toggle('selected');
+            updateAllPlanetaryHighlights();
+        }
+
+        function handleSealKeyClick(event) {
+            const keySymbol = event.target.closest('.planetary-key-symbol');
+            if (!keySymbol) return;
+            const symbolName = keySymbol.dataset.symbolName;
+            let targetId;
+            switch (symbolName) {
+                case 'Ave': targetId = 'seal-text-ave'; break;
+                case 'Ilemese': targetId = 'seal-text-ilemese'; break;
+                case 'Liba': targetId = 'seal-text-liba'; break;
+                case 'An': targetId = 'seal-text-an'; break;
+                case 'Rocle': targetId = 'seal-text-rocle'; break;
+                case 'El': targetId = 'seal-symbol-el'; break;
+                case 'Hagonel': targetId = 'seal-text-hagonel'; break;
+                default: return;
+            }
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) targetElement.classList.toggle('seal-highlight');
+            keySymbol.classList.toggle('seal-key-active');
+        }
+
+        function handleContainerClick(event) {
+            const playButton = event.target.closest('.play-button');
+            const keySymbol = event.target.closest('.planetary-key-symbol');
+            if (playButton) { toggleAnimation(playButton); } 
+            else if (keySymbol) { handleSealKeyClick(event); } 
+            else { const row = event.target.closest('.planetary-king-row'); if (row) handlePlanetaryKingRowClick(event); }
+        }
+
+        function handleGenericClick(key) { if (!key) return; activeKeys.has(key) ? activeKeys.delete(key) : activeKeys.add(key); updateAllVisuals(); }
+        function handleNameClick(event) { const button = event.target.closest('button'); if (button) handleGenericClick(button.dataset.key); }
+        function handleDiagramClick(event) { const key = event.target.closest('.bonorum-diagram-name')?.dataset.key; if (!key) return; const bonorumEntity = bonorumEntities.find(e => e.key === key); if (!bonorumEntity) return; if (bonorumEntity.type === 'Minister') { handleGenericClick(key); } else { const holyTableEntity = entitiesByName.get(bonorumEntity.name); if (holyTableEntity) handleGenericClick(holyTableEntity.key); else handleGenericClick(key); } }
+        function handleBonorumListClick(event) { const button = event.target.closest('button'); if (!button) return; const bonorumKey = button.dataset.key; const bonorumEntity = bonorumEntities.find(e => e.key === bonorumKey); if (!bonorumEntity) return; if (bonorumEntity.type === 'Minister') { handleGenericClick(bonorumKey); } else { const holyTableEntity = entitiesByName.get(bonorumEntity.name); if (holyTableEntity) handleGenericClick(holyTableEntity.key); } }
+        
+        function handleLoagaethKeyClick() {
+            interactionState = (interactionState + 1) % 3;
+            const loagaethGrid = document.getElementById('loagaeth-table-grid');
+            const allCells = loagaethGrid.querySelectorAll('.loagaeth-cell');
+            loagaethGrid.style.gridTemplateColumns = `repeat(12, var(--cell-size))`;
+            allCells.forEach(cell => cell.style.gridColumn = '');
+            if (interactionState === 2) {
+                loagaethGrid.style.gridTemplateColumns = `repeat(6, 1fr) 40px repeat(6, 1fr)`;
+                allCells.forEach(cell => { if (parseInt(cell.dataset.col) >= 6) cell.style.gridColumn = `${parseInt(cell.dataset.col) + 2}`; });
+            }
+            updateAllVisuals();
+        }
+        function handleHolyTableCenterClick() {
+            interactionState = (interactionState === 1) ? 0 : 1;
+            if (interactionState === 0) {
+                const loagaethGrid = document.getElementById('loagaeth-table-grid');
+                const allCells = loagaethGrid.querySelectorAll('.loagaeth-cell');
+                loagaethGrid.style.gridTemplateColumns = `repeat(12, var(--cell-size))`;
+                allCells.forEach(cell => cell.style.gridColumn = '');
+            }
+            updateAllVisuals();
+        }
+
+        createHolyTable(); createLoagaethTable(); createEntityLists(); createBonorumCross(); createBonorumList(); createBonorumDiagram(); createPlanetaryKingsGrids(); 
+        createHeptagramSeal();
+        
+        document.getElementById('princes-list-desktop-main').addEventListener('click', handleNameClick);
+        document.getElementById('kings-list-desktop-main').addEventListener('click', handleNameClick);
+        document.getElementById('loagaeth-clickable-area').addEventListener('click', handleLoagaethKeyClick);
+        document.getElementById('holy-table-grid').addEventListener('click', (event) => { if (event.target.closest('.center-diagram-cell')) { handleHolyTableCenterClick(); } });
+        document.getElementById('bonorum-full-list').addEventListener('click', handleBonorumListClick);
+        document.getElementById('bonorum-diagram-container').addEventListener('click', handleDiagramClick);
+        document.getElementById('planetary-kings-container').addEventListener('click', handleContainerClick);
+        document.getElementById('toggle-font-btn').addEventListener('click', toggleEnochianFont);
+        document.addEventListener('keydown', (event) => { if (event.key.toLowerCase() === 'e' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { toggleEnochianFont(); } });
+        
+        function setupZoomableLightbox(thumbnailId, lightboxId) { const thumbnail = document.getElementById(thumbnailId); const lightbox = document.getElementById(lightboxId); const img = lightbox.querySelector('img'); if (!thumbnail || !lightbox || !img) return; const zoomLevels = [1.5, 2.5, 4, 1]; let currentZoomLevel = 0; let scale = 1, panX = 0, panY = 0, isDragging = false, startX, startY, startPanX, startPanY; function applyTransform() { img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`; img.classList.toggle('pannable', scale > 1); } function resetTransform() { currentZoomLevel = 0; scale = 1; panX = 0; panY = 0; img.style.transition = 'none'; applyTransform(); setTimeout(() => { img.style.transition = ''; }, 10); } thumbnail.addEventListener('click', () => { lightbox.classList.add('active'); }); lightbox.addEventListener('click', (e) => { if (e.target === lightbox || e.target.classList.contains('dee-description')) { lightbox.classList.remove('active'); resetTransform(); } }); img.addEventListener('click', (e) => { e.stopPropagation(); if (isDragging) return; currentZoomLevel = (currentZoomLevel + 1) % zoomLevels.length; scale = zoomLevels[currentZoomLevel]; if (scale === 1) { panX = 0; panY = 0; } applyTransform(); }); img.addEventListener('mousedown', (e) => { if (scale <= 1) return; e.preventDefault(); isDragging = true; startX = e.clientX; startY = e.clientY; startPanX = panX; startPanY = panY; img.classList.add('dragging'); }); window.addEventListener('mousemove', (e) => { if (isDragging) { panX = startPanX + (e.clientX - startX); panY = startPanY + (e.clientY - startY); applyTransform(); } }); window.addEventListener('mouseup', () => { if (isDragging) { setTimeout(() => { isDragging = false; }, 50); img.classList.remove('dragging'); } }); }
+        setupZoomableLightbox('holy-table-image-thumbnail', 'image-lightbox');
+        setupZoomableLightbox('dee-thumbnail', 'dee-lightbox');
+        setupZoomableLightbox('loagaeth-practice-thumbnail', 'loagaeth-practice-lightbox');
+        setupZoomableLightbox('cross-image-thumbnail', 'cross-lightbox');
+        setupZoomableLightbox('circle-image-thumbnail', 'circle-lightbox');
+        setupZoomableLightbox('tables-image-thumbnail', 'tables-lightbox');
+        setupZoomableLightbox('sigillum-dei-thumbnail', 'sigillum-dei-lightbox');
+        
+        window.addEventListener('resize', applyScaling);
+        window.addEventListener('orientationchange', applyScaling);
+        applyScaling();
+    });
+</script>
+</body>
+</html>
